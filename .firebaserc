@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "oil-distribution-app-8b767",
+    "production": "oil-distribution-app-8b767"
+  },
+  "targets": {},
+  "etags": {}
+}

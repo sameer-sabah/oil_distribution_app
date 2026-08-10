@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "20625081403",
+    "firebase_url": "https://oil-distribution-app-8b767-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "oil-distribution-app-8b767",
+    "storage_bucket": "oil-distribution-app-8b767.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20625081403:android:ac3e657c5d43e94c51881e",
+        "android_client_info": {
+          "package_name": "com.example.oil_distribution_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQd-uwkYEbH1Yw7ULY6fVjGFkeVp4V7_4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

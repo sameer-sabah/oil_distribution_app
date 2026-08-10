@@ -1,0 +1,51 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "oil-distribution-app-8b767",
+          "appId": "1:20625081403:android:ac3e657c5d43e94c51881e",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "oil-distribution-app-8b767",
+          "configurations": {
+            "android": "1:20625081403:android:ac3e657c5d43e94c51881e",
+            "ios": "1:20625081403:ios:7fffb9072709386551881e",
+            "web": "1:20625081403:web:170e32f721a7072951881e"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "functions": [
+  {
+    "source": "functions",
+    "codebase": "default",
+    "disallowLegacyRuntimeConfig": true,
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "*.local"
+    ]
+  }
+]
+    }
+  ]
+}
