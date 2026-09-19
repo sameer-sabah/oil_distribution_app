@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../screens/manager/products_screen.dart';
 import '../../screens/manager/reports_screen.dart';
 import '../../screens/manager/notifications_screen.dart';
-import '../../screens/manager/supply_requests_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 class ManagerDrawer extends StatelessWidget {
   const ManagerDrawer({super.key});
@@ -170,7 +169,7 @@ class ManagerDrawer extends StatelessWidget {
       ),
       child: Material(
         color: selected
-            ? Colors.white.withOpacity(.15)
+            ? Colors.white.withValues(alpha: .15)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
         child: ListTile(

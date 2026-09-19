@@ -843,7 +843,7 @@ class _EditStationScreenState
             DropdownButtonFormField<String>(
 
 
-              value:
+              initialValue:
               stationType,
 
 
@@ -911,7 +911,7 @@ class _EditStationScreenState
             DropdownButtonFormField<String>(
 
 
-              value:
+              initialValue:
               workingStatus,
 
 
@@ -938,6 +938,19 @@ class _EditStationScreenState
                   child:
                   Text(
                     "🟢 مفتوحة",
+                  ),
+
+                ),
+
+
+                DropdownMenuItem(
+
+                  value:
+                  "خافرة",
+
+                  child:
+                  Text(
+                    "🌙 خافرة",
                   ),
 
                 ),

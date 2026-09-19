@@ -7,7 +7,6 @@ import 'add_station_screen.dart';
 import 'edit_station_screen.dart';
 
 
-
 class StationsScreen extends StatefulWidget {
 
 
@@ -91,8 +90,9 @@ class _StationsScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 
@@ -693,7 +693,9 @@ class _StationsScreenState
 
                     if(value == "delete"){
 
-
+                      debugPrint("========== DELETE STATION ==========");
+                      debugPrint("اسم المحطة: ${station.name}");
+                      debugPrint("Station ID: ${station.id}");
 
                       await deleteStation(
 

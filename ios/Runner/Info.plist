@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-<string>نافذة المنتوج النفطي</string>
+	<string>نافذة المنتوج النفطي</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-<string>نافذة المنتوج النفطي</string>
+	<string>نافذة المنتوج النفطي</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -26,6 +26,28 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+
+	<!-- صلاحيات iOS المستخدمة فعلياً في التطبيق -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>يحتاج تطبيق نافذة المنتوج النفطي إلى موقعك لعرض المحطات القريبة وتحديد المواقع على الخريطة.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>يحتاج تطبيق نافذة المنتوج النفطي إلى الكاميرا لالتقاط الصور والمستندات المطلوبة.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>يحتاج تطبيق نافذة المنتوج النفطي إلى الوصول للصور لاختيار ورفع الصور.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>يسمح تطبيق نافذة المنتوج النفطي بحفظ الصور والملفات التي ينشئها المستخدم عند الحاجة.</string>
+
+	<!-- ضع مفتاح Google Maps الخاص بـ iOS هنا قبل البناء -->
+<key>GOOGLE_MAPS_API_KEY</key>
+<string>AIzaSyCvpNZsWR_K46OSS_CfwG7dM7befq38UAY</string>
+
+	<!-- ضروري لإشعارات FCM بالخلفية -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

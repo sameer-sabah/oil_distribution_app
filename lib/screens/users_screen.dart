@@ -74,8 +74,9 @@ class _UsersScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 
@@ -144,22 +145,48 @@ class _UsersScreenState
 
 
 
-  Future<void> deleteUser(
-      String uid
-      ) async {
+  Future<void> deleteUser(String uid) async {
+    if (uid.trim().isEmpty) {
+      if (!mounted) return;
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "تعذر حذف المستخدم: معرف المستخدم غير موجود",
+          ),
+        ),
+      );
 
+      return;
+    }
 
-    await userService.deleteUser(
-        uid
-    );
+    try {
+      // حذف المستخدم من Firebase Realtime Database
+      await userService.deleteUser(uid);
 
+      // إعادة تحميل القائمة من Firebase
+      await loadUsers();
 
+      if (!mounted) return;
 
-    await loadUsers();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "تم حذف المستخدم بنجاح",
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
 
-
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "فشل حذف المستخدم: $e",
+          ),
+        ),
+      );
+    }
   }
 
 
@@ -337,186 +364,123 @@ class _UsersScreenState
 
 
 
-        trailing:
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
 
+            //====================================
+            // زر التعديل
+            //====================================
 
-        PopupMenuButton(
+            IconButton(
+              tooltip: "تعديل",
 
-
-
-          itemBuilder:(context)=>[
-
-
-
-            const PopupMenuItem(
-
-
-
-              value:
-              "delete",
-
-
-
-              child:
-              Text(
-                  "حذف"
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.blue,
               ),
 
+              onPressed: () async {
 
+                final result =
+                await Navigator.push(
+                  context,
 
-            ),
-
-
-
-          ],
-
-
-
-
-
-          onSelected:(value) async {
-
-
-
-            if(value == "delete"){
-
-
-
-              final confirm =
-              await showDialog<bool>(
-
-
-
-                context:
-                context,
-
-
-
-                builder:(context){
-
-
-
-                  return AlertDialog(
-
-
-
-                    title:
-                    const Text(
-                        "حذف المستخدم"
-                    ),
-
-
-
-
-                    content:
-                    const Text(
-                        "هل تريد حذف المستخدم؟"
-                    ),
-
-
-
-
-                    actions:[
-
-
-
-                      TextButton(
-
-
-
-                        onPressed:(){
-
-                          Navigator.pop(
-                              context,
-                              false
-                          );
-
-
-                        },
-
-
-
-                        child:
-                        const Text(
-                            "إلغاء"
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        AddUserScreen(
+                          user: user,
                         ),
-
-
-
-                      ),
-
-
-
-
-
-                      ElevatedButton(
-
-
-
-                        onPressed:(){
-
-
-                          Navigator.pop(
-                              context,
-                              true
-                          );
-
-
-                        },
-
-
-
-                        child:
-                        const Text(
-                            "حذف"
-                        ),
-
-
-
-                      ),
-
-
-
-                    ],
-
-
-
-                  );
-
-
-
-                },
-
-
-
-              );
-
-
-
-
-
-              if(confirm == true){
-
-
-
-                await deleteUser(
-                    user["uid"]
+                  ),
                 );
 
+                // إذا تم التعديل
+                // نعيد تحميل القائمة
+                if (result == true) {
 
+                  await loadUsers();
 
-              }
+                }
+              },
+            ),
 
+            //====================================
+            // زر الحذف
+            //====================================
 
+            IconButton(
+              tooltip: "حذف",
 
-            }
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
 
+              onPressed: () async {
 
+                final confirm =
+                await showDialog<bool>(
+                  context: context,
 
-          },
+                  builder: (context) {
 
+                    return AlertDialog(
 
+                      title: const Text(
+                        "حذف المستخدم",
+                      ),
 
+                      content: const Text(
+                        "هل تريد حذف المستخدم؟",
+                      ),
+
+                      actions: [
+
+                        TextButton(
+                          onPressed: () {
+
+                            Navigator.pop(
+                              context,
+                              false,
+                            );
+
+                          },
+
+                          child: const Text(
+                            "إلغاء",
+                          ),
+                        ),
+
+                        ElevatedButton(
+                          onPressed: () {
+
+                            Navigator.pop(
+                              context,
+                              true,
+                            );
+
+                          },
+
+                          child: const Text(
+                            "حذف",
+                          ),
+                        ),
+
+                      ],
+                    );
+                  },
+                );
+
+                if (confirm == true) {
+
+                  await deleteUser(
+                    user["uid"],
+                  );
+
+                }
+              },
+            ),
+          ],
         ),
 
 
@@ -638,172 +602,54 @@ class _UsersScreenState
 
 
 
-      body:
-
-
-      Column(
-
-
-
-        children:[
-
-
-
-
-
+      body: Column(
+        children: [
           Padding(
-
-
-
-            padding:
-            const EdgeInsets.all(10),
-
-
-
-
-            child:
-
-
-            TextField(
-
-
-
-              controller:
-              searchController,
-
-
-
-              onChanged:
-              search,
-
-
-
-              decoration:
-
-              const InputDecoration(
-
-
-
-                hintText:
-                "بحث...",
-
-
-
-                prefixIcon:
-                Icon(
-                    Icons.search
-                ),
-
-
-
-                border:
-                OutlineInputBorder(),
-
-
-
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: searchController,
+              onChanged: (v) {
+                setState(() {});
+              },
+              decoration: const InputDecoration(
+                hintText: "بحث باسم المستخدم أو المحطة...",
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
               ),
-
-
-
             ),
-
-
-
           ),
-
-
-
-
-
-
-
           Expanded(
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: userService.usersStream(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
+                final liveUsers = snapshot.data ?? [];
+                final query = searchController.text.trim().toLowerCase();
 
+                final displayList = liveUsers.where((user) {
+                  final name = (user["fullName"] ?? user["name"] ?? "").toString().toLowerCase();
+                  final stationName = (user["stationName"] ?? "").toString().toLowerCase();
+                  final role = (user["role"] ?? "").toString().toLowerCase();
+                  return name.contains(query) || stationName.contains(query) || role.contains(query);
+                }).toList();
 
-            child:
+                if (displayList.isEmpty) {
+                  return const Center(child: Text("لا يوجد مستخدمون"));
+                }
 
-
-            filteredUsers.isEmpty
-
-
-
-                ?
-
-
-            const Center(
-
-
-
-              child:
-              Text(
-                  "لا يوجد مستخدمون"
-              ),
-
-
-
-            )
-
-
-
-                :
-
-
-
-            RefreshIndicator(
-
-
-
-              onRefresh:
-              loadUsers,
-
-
-
-              child:
-
-
-              ListView.builder(
-
-
-
-                itemCount:
-                filteredUsers.length,
-
-
-
-                itemBuilder:(context,index){
-
-
-
-                  return userCard(
-
-                      filteredUsers[index]
-
-                  );
-
-
-
-                },
-
-
-
-              ),
-
-
-
+                return ListView.builder(
+                  itemCount: displayList.length,
+                  itemBuilder: (context, index) {
+                    return userCard(displayList[index]);
+                  },
+                );
+              },
             ),
-
-
-
           ),
-
-
-
-
         ],
-
-
-
       ),
 
 

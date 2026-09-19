@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import '../../widgets/admin/admin_drawer.dart';
-
+import 'package:package_info_plus/package_info_plus.dart';
 class AdminDashboardV2 extends StatelessWidget {
 const AdminDashboardV2({super.key});
 
@@ -115,7 +115,7 @@ BorderRadius.circular(22),
 
 boxShadow: [
 BoxShadow(
-color: Colors.black.withOpacity(.08),
+color: Colors.black.withValues(alpha: .08),
 blurRadius: 15,
 offset: const Offset(0, 8),
 ),
@@ -352,7 +352,7 @@ color: Colors.white,
 borderRadius: BorderRadius.circular(18),
 boxShadow: [
 BoxShadow(
-color: Colors.black.withOpacity(.08),
+color: Colors.black.withValues(alpha: .08),
 blurRadius: 10,
 offset: const Offset(0, 5),
 ),
@@ -368,12 +368,21 @@ color: AppColors.primary,
 const SizedBox(width: 10),
 
 Expanded(
-child: Text(
-"الإصدار 1.0.0   |   آخر تحديث: ${DateTime.now().toString().substring(0, 10)}",
-style: const TextStyle(
-color: Colors.grey,
-),
-),
+  child: FutureBuilder<PackageInfo>(
+    future: PackageInfo.fromPlatform(),
+    builder: (context, snapshot) {
+      final version = snapshot.hasData
+          ? snapshot.data!.version
+          : '...';
+
+      return Text(
+        "الإصدار $version   |   آخر تحديث: ${DateTime.now().toString().substring(0, 10)}",
+        style: const TextStyle(
+          color: Colors.grey,
+        ),
+      );
+    },
+  ),
 ),
 ],
 ),
@@ -405,7 +414,7 @@ color: Colors.white,
 borderRadius: BorderRadius.circular(22),
 boxShadow: [
 BoxShadow(
-color: Colors.black.withOpacity(.08),
+color: Colors.black.withValues(alpha: .08),
 blurRadius: 15,
 offset: const Offset(0, 8),
 ),
@@ -416,7 +425,7 @@ mainAxisAlignment: MainAxisAlignment.center,
 children: [
 CircleAvatar(
 radius: 32,
-backgroundColor: color.withOpacity(.12),
+backgroundColor: color.withValues(alpha: .12),
 child: Icon(
 icon,
 color: color,
@@ -461,7 +470,7 @@ fontSize: 16,
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.08),
+            color: Colors.black.withValues(alpha: .08),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -475,7 +484,7 @@ fontSize: 16,
 
           CircleAvatar(
             radius: 24,
-            backgroundColor: color.withOpacity(.12),
+            backgroundColor: color.withValues(alpha: .12),
 
             child: Icon(
               icon,

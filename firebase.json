@@ -20,9 +20,11 @@
       }
     }
   },
+  "database": {
+    "rules": "database.rules.json"
+  },
   "functions": [
     {
-      "source": "functions",
       "codebase": "default",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
@@ -32,20 +34,45 @@
         "firebase-debug.*.log",
         "*.local"
       ],
-      "functions": [
-  {
-    "source": "functions",
-    "codebase": "default",
-    "disallowLegacyRuntimeConfig": true,
+      "source": "functions"
+    },
+    {
+      "codebase": "functions",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "source": "JavaScript"
+    },
+    {
+      "source": "delete_user",
+      "codebase": "delete_user",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "build/web",
     "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "*.local"
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
-]
-    }
-  ]
 }

@@ -26,6 +26,10 @@ class StationCard extends StatelessWidget {
       return Colors.green;
     }
 
+    if (station.workingStatus.contains("خاف") || station.workingStatus.contains("خفار") || station.workingStatus == "duty") {
+      return Colors.purple;
+    }
+
     if (station.workingStatus == "مغلقة") {
       return Colors.red;
     }
@@ -217,6 +221,12 @@ class StationCard extends StatelessWidget {
                   "كاز",
                   station.diesel,
                   Colors.orange,
+                ),
+
+                fuelItem(
+                  "نفط",
+                  station.whiteOil,
+                  Colors.amber.shade800,
                 ),
 
                 fuelItem(

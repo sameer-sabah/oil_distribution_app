@@ -54,8 +54,14 @@ class _GovernmentStationsScreenState
       );
 
       final governmentStations = data.where((station) {
-        return station.stationType.trim() == "حكومية" ||
-            station.stationType.trim() == "government";
+        final type =
+        station.stationType
+            .trim()
+            .toLowerCase();
+
+        return type == "حكومية" ||
+            type == "حكومي" ||
+            type == "government";
       }).toList();
 
       if (!mounted) return;

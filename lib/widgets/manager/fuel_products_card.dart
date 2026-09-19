@@ -61,7 +61,7 @@ class _FuelCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.06),
+            color: Colors.black.withValues(alpha: .06),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -73,7 +73,7 @@ class _FuelCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: color.withOpacity(.12),
+                backgroundColor: color.withValues(alpha: .12),
                 child: Icon(
                   Icons.local_gas_station,
                   color: color,
@@ -95,7 +95,7 @@ class _FuelCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(.12),
+                  color: color.withValues(alpha: .12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

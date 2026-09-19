@@ -179,8 +179,9 @@ class _SendNotificationScreenState
 
 
 
-      if(!mounted)
+      if(!mounted) {
         return;
+      }
 
 
 
@@ -226,8 +227,9 @@ class _SendNotificationScreenState
 
 
 
-      if(!mounted)
+      if(!mounted) {
         return;
+      }
 
 
 

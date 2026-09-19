@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:oil_distribution_app/models/station.dart';
 import 'package:oil_distribution_app/services/station_service.dart';
+import 'package:oil_distribution_app/services/auth_service.dart';
 import '../map_picker_screen.dart';
 
 
@@ -172,293 +173,215 @@ result.longitude.toString();
 
 
 
-
 Future<void> saveStation() async {
 
+  if (!formKey.currentState!.validate()) {
+    return;
+  }
+
+  try {
+
+    // المستخدم الحالي
+    var currentUser =
+        AuthService.instance.currentUser;
+
+    // محاولة استعادة المستخدم إذا كان غير موجود
+    if (currentUser == null) {
+      try {
+        currentUser =
+        await AuthService.instance.restoreCurrentUser();
+      } catch (e) {
+        debugPrint("Restore user error: $e");
+        currentUser = null;
+      }
+    }
 
+    // التأكد من المستخدم
+    if (currentUser == null) {
+      if (!mounted) return;
 
-if(!formKey.currentState!.validate()){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "تعذر معرفة المستخدم الحالي، يرجى تسجيل الدخول من جديد",
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      return;
+    }
 
-return;
+    // التأكد من الفرع
+    if (currentUser.branchId.trim().isEmpty) {
+      if (!mounted) return;
 
-}
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "حساب مدير الفرع غير مرتبط بفرع",
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
 
+      return;
+    }
 
+    final id =
+    DateTime.now()
+        .millisecondsSinceEpoch
+        .toString();
 
+    final station = Station(
 
+      id: id,
 
+      name:
+      stationName.text.trim(),
 
-final id =
+      stationLicense:
+      stationLicense.text.trim(),
 
-DateTime.now()
-.millisecondsSinceEpoch
-.toString();
+      stationType:
+      stationType,
 
+      governorate:
+      governorate.text.trim(),
 
+      district:
+      district.text.trim(),
 
+      // الفرع من حساب مدير الفرع
+      branchId:
+      currentUser.branchId,
 
+      branchName:
+      currentUser.branchName,
 
+      latitude:
+      double.tryParse(
+        latitude.text.trim(),
+      ) ?? 0,
 
+      longitude:
+      double.tryParse(
+        longitude.text.trim(),
+      ) ?? 0,
 
-final station = Station(
+      phone:
+      phone.text.trim(),
 
+      address:
+      address.text.trim(),
 
+      managerUid:
+      "",
 
-id:id,
+      managerName:
+      managerName.text.trim(),
 
+      managerPhone:
+      managerPhone.text.trim(),
 
+      regular95:
+      0,
 
-name:
-stationName.text.trim(),
+      improved95:
+      0,
 
+      super95:
+      0,
 
+      diesel:
+      0,
 
+      whiteOil:
+      0,
 
-stationLicense:
-stationLicense.text.trim(),
+      lpg:
+      0,
 
+      supportedProducts: const {
+        "regular95": true,
+        "improved95": true,
+        "super95": true,
+        "diesel": true,
+        "whiteOil": true,
+        "lpg": true,
+      },
 
+      workingStatus:
+      workingStatus,
 
+      status:
+      "pending",
 
-stationType:
-stationType,
+      approved:
+      false,
 
+      active:
+      true,
 
+      workingHours:
+      "",
 
+      notes:
+      "",
 
-governorate:
-governorate.text.trim(),
+      licenseNumber:
+      "",
 
+      licenseIssuer:
+      "",
 
+      licenseIssueDate:
+      "",
 
+      licenseExpiryDate:
+      "",
 
-district:
-district.text.trim(),
+      createdAt:
+      DateTime.now()
+          .toIso8601String(),
 
+      updatedAt:
+      DateTime.now()
+          .toIso8601String(),
+    );
 
+    // إرسال الطلب
+    await stationService.addPendingStation(
+      station.toMap(),
+    );
 
+    if (!mounted) return;
 
-branchId:
-"",
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "تم إرسال طلب تسجيل المحطة بنجاح",
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
 
+    Navigator.pop(context);
 
+  } catch (e) {
 
+    if (!mounted) return;
 
-branchName:
-"",
-
-
-
-
-
-latitude:
-
-double.tryParse(
-latitude.text
-) ?? 0,
-
-
-
-
-longitude:
-
-double.tryParse(
-longitude.text
-) ?? 0,
-
-
-
-
-
-
-phone:
-phone.text.trim(),
-
-
-
-
-address:
-address.text.trim(),
-
-
-
-
-
-
-managerUid:
-"",
-
-
-
-
-managerName:
-managerName.text.trim(),
-
-
-
-
-managerPhone:
-managerPhone.text.trim(),
-
-
-
-
-
-
-regular95:
-0,
-
-
-
-improved95:
-0,
-
-
-
-super95:
-0,
-
-
-
-diesel:
-0,
-
-
-
-whiteOil:
-0,
-
-
-
-lpg:
-0,
-
-
-
-
-workingStatus:
-workingStatus,
-
-
-
-
-status:
-"active",
-
-
-
-
-
-approved:
-false,
-
-
-
-active:
-true,
-
-
-
-
-
-workingHours:
-"",
-
-
-
-
-notes:
-"",
-
-
-
-
-
-licenseNumber:
-"",
-
-
-
-
-licenseIssuer:
-"",
-
-
-
-
-licenseIssueDate:
-"",
-
-
-
-
-licenseExpiryDate:
-"",
-
-
-
-
-
-createdAt:
-DateTime.now()
-.toIso8601String(),
-
-
-
-
-
-updatedAt:
-DateTime.now()
-.toIso8601String(),
-
-
-
-);
-
-
-
-
-
-await stationService.addPendingStation(
-  station.toMap(),
-);
-
-
-
-
-if(!mounted)
-return;
-
-
-
-
-ScaffoldMessenger.of(context)
-.showSnackBar(
-
-
-const SnackBar(
-
-content:
-
-Text(
-"تم إرسال طلب إضافة المحطة",
-),
-
-
-backgroundColor:
-Colors.green,
-
-),
-
-
-);
-
-
-
-Navigator.pop(context);
-
-
-
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "تعذر تسجيل المحطة:\n$e",
+        ),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 7),
+      ),
+    );
+  }
 }
 @override
 Widget build(BuildContext context) {
@@ -735,7 +658,7 @@ Widget build(BuildContext context) {
 
 
 
-            value:
+            initialValue:
 
             stationType,
 
@@ -848,7 +771,7 @@ Widget build(BuildContext context) {
 
 
 
-            value:
+            initialValue:
 
             workingStatus,
 
@@ -887,6 +810,23 @@ Widget build(BuildContext context) {
 
                 Text(
                   "🟢 مفتوحة",
+                ),
+
+              ),
+
+
+
+
+              DropdownMenuItem(
+
+                value:
+
+                "خافرة",
+
+                child:
+
+                Text(
+                  "🌙 خافرة",
                 ),
 
               ),

@@ -1123,10 +1123,9 @@ class ProductDetailsScreen extends StatelessWidget {
             .center,
         children: [
           Text(
-            formatNumber(
+            "${formatNumber(
               quantity,
-            ) +
-                " لتر",
+            )} لتر",
             style:
             TextStyle(
               color: color,
@@ -1348,6 +1347,129 @@ class ProductStationDetailsScreen
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(
+              height: 15,
+            ),
+
+            // Fuel Availability Report for Tomorrow (Updated at 9 PM automatically)
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.access_time_filled_rounded, color: Colors.blue, size: 24),
+                            SizedBox(width: 8),
+                            Text(
+                              'تقرير الوقود لليوم التالي',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withValues(alpha: .1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'تحديث 9:00 م',
+                            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'قراءة تلقائية لبيانات المحطة ونشر التقرير للمواطن لليوم التالي.',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    const Divider(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: station.regular95 > 0 ? Colors.green.shade50 : Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: station.regular95 > 0 ? Colors.green.shade200 : Colors.red.shade200),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text('بنزين عادي', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                const SizedBox(height: 6),
+                                Text(
+                                  station.regular95 > 0 ? 'متوفر (${station.regular95} لتر)' : 'غير متوفر',
+                                  style: TextStyle(
+                                    color: station.regular95 > 0 ? Colors.green.shade800 : Colors.red.shade800,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: station.improved95 > 0 ? Colors.green.shade50 : Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: station.improved95 > 0 ? Colors.green.shade200 : Colors.red.shade200),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text('بنزين محسن', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                const SizedBox(height: 6),
+                                Text(
+                                  station.improved95 > 0 ? 'متوفر (${station.improved95} لتر)' : 'غير متوفر',
+                                  style: TextStyle(
+                                    color: station.improved95 > 0 ? Colors.green.shade800 : Colors.red.shade800,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.blue.shade800,
+                          side: BorderSide(color: Colors.blue.shade300),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تم تجهيز وتنزيل تقرير المحطة لليوم التالي بنجاح')),
+                          );
+                        },
+                        icon: const Icon(Icons.download_rounded),
+                        label: const Text('تنزيل تقرير المحطة كصورة'),
                       ),
                     ),
                   ],

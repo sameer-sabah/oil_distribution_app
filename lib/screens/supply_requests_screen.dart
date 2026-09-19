@@ -98,7 +98,7 @@ class _SupplyRequestsScreenState
                   child:
                   DropdownButtonFormField<
                       String>(
-                    value:
+                    initialValue:
                     _selectedStatus,
 
                     decoration:
@@ -260,7 +260,7 @@ class _SupplyRequestsScreenState
                   backgroundColor:
                   _statusColor(
                     request.status,
-                  ).withOpacity(.15),
+                  ).withValues(alpha: .15),
 
                   label: Text(
                     _statusText(
@@ -624,7 +624,7 @@ class _SupplyRequestsScreenState
                     await _service.createRequest(
                       request,
                     );
-
+                    if (!context.mounted) return;
                     if (mounted) {
                       Navigator.pop(context);
 

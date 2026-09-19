@@ -1,210 +1,220 @@
 import 'package:firebase_database/firebase_database.dart';
 
 import '../models/branch_model.dart';
-import '../core/constants/user_roles.dart';
+import '../models/user_model.dart';
+import 'auth_service.dart';
 class BranchService {
-BranchService._();
+  BranchService._();
 
-static final BranchService instance =
-BranchService._();
+  static final BranchService instance =
+  BranchService._();
 
-final FirebaseDatabase _database =
-FirebaseDatabase.instance;
+  final FirebaseDatabase _database =
+      FirebaseDatabase.instance;
 
-DatabaseReference get branchesRef =>
-_database.ref("branches");
+  DatabaseReference get branchesRef =>
+      _database.ref("branches");
 
-DatabaseReference get usersRef =>
-_database.ref("users");
+  DatabaseReference get usersRef =>
+      _database.ref("users");
 
 //=========================================
 // إنشاء فرع جديد
 //=========================================
 
-Future<void> addBranch({
-required String governorateId,
-required String governorateName,
+  Future<void> addBranch({
+    required String governorateId,
+    required String governorateName,
+    required String branchName,
+    required String managerName,
+    required String username,
+    required String password,
+    required String phone,
+    required String email,
+    required String address,
+  }) async {
+    final cleanUsername = username.trim();
+    final cleanPassword = password.trim();
+    final cleanContactEmail = email.trim();
 
-required String branchName,
+    if (cleanUsername.isEmpty) {
+      throw Exception("اسم المستخدم مطلوب");
+    }
 
-required String managerName,
+    if (cleanPassword.length < 6) {
+      throw Exception("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+    }
 
-required String username,
+    // تسجيل الدخول في التطبيق يعتمد على username@opdc.iq،
+    // لذلك يجب إنشاء حساب Firebase Authentication بنفس البريد.
+    final authEmail = cleanUsername.contains('@')
+        ? cleanUsername.toLowerCase()
+        : "${cleanUsername.toLowerCase()}@opdc.iq";
 
-required String password,
+    final branchId = branchesRef.push().key!;
+    final now = DateTime.now();
 
-required String phone,
+    // 1) إنشاء حساب مدير الفرع الحقيقي في Firebase Authentication.
+    // يتم الإنشاء من خلال Secondary Firebase App حتى تبقى جلسة مدير النظام فعالة.
+    final manager = AppUser(
+      id: "",
+      fullName: managerName.trim(),
+      username: cleanUsername,
+      password: cleanPassword,
+      email: authEmail,
+      phone: phone.trim(),
+      role: "branchManager",
+      governorateId: governorateId,
+      governorateName: governorateName,
+      branchId: branchId,
+      branchName: branchName.trim(),
+      stationId: "",
+      stationName: "",
+      position: "مدير الفرع",
+      image: "",
+      active: true,
+      createdAt: now,
+      updatedAt: now,
+      lastLogin: now,
+    );
 
-required String email,
+    final createdManager =
+    await AuthService.instance.createUserAccount(user: manager);
 
-required String address,
-}) async {
+    if (createdManager == null || createdManager.id.isEmpty) {
+      throw Exception("فشل إنشاء حساب مدير الفرع");
+    }
 
-final String branchId =
-branchesRef.push().key!;
+    // مهم: هذا هو UID الحقيقي من Firebase Authentication،
+    // وليس push key عشوائياً.
+    final managerId = createdManager.id;
 
-final String managerId =
-usersRef.push().key!;
+    final branch = BranchModel(
+      id: branchId,
+      governorateId: governorateId,
+      governorateName: governorateName,
+      name: branchName.trim(),
+      managerId: managerId,
+      managerName: managerName.trim(),
+      phone: phone.trim(),
+      email: cleanContactEmail,
+      address: address.trim(),
+      governmentStations: 0,
+      privateStations: 0,
+      usersCount: 1,
+      active: true,
+      createdAt: now,
+      updatedAt: now,
+    );
 
-final branch = BranchModel(
-id: branchId,
+    final managerData = manager.toMap();
+    managerData["id"] = managerId;
+    managerData["uid"] = managerId;
+    managerData["email"] = authEmail;
 
-governorateId: governorateId,
+    // الاحتفاظ بالبريد الذي أدخله مدير النظام كبريد تواصل،
+    // بينما email يبقى بريد تسجيل الدخول المطابق لطريقة login الحالية.
+    if (cleanContactEmail.isNotEmpty &&
+        cleanContactEmail.toLowerCase() != authEmail) {
+      managerData["contactEmail"] = cleanContactEmail;
+    }
 
-governorateName: governorateName,
-
-name: branchName,
-
-managerId: managerId,
-
-managerName: managerName,
-
-phone: phone,
-
-email: email,
-
-address: address,
-
-governmentStations: 0,
-
-privateStations: 0,
-
-usersCount: 1,
-
-active: true,
-
-createdAt: DateTime.now(),
-
-updatedAt: DateTime.now(),
-);
-
-await branchesRef
-.child(branch.id)
-.set(branch.toMap());
-
-await usersRef.child(managerId).set({
-
-"id": managerId,
-
-"fullName": managerName,
-
-"username": username,
-
-"password": password,
-
-"email": email,
-
-"phone": phone,
-
-  "role": "branchManager",
-
-"governorateId": governorateId,
-
-  "governorateName": governorateName,
-
-"branchId": branch.id,
-
-"branchName": branch.name,
-
-"stationId": "",
-
-"stationName": "",
-
-"active": true,
-
-"createdAt":
-DateTime.now().toIso8601String(),
-});
-}
+    // 2) حفظ الفرع وملف مديره بعملية واحدة، حتى لا يتكوّن فرع
+    // بدون مستخدم أو مستخدم بدون ربط صحيح بالفرع.
+    await _database.ref().update({
+      "branches/$branchId": branch.toMap(),
+      "users/$managerId": managerData,
+    });
+  }
 //=========================================
 // جلب جميع الفروع
 //=========================================
 
-Future<List<BranchModel>> getBranches() async {
-final snapshot = await branchesRef.get();
+  Future<List<BranchModel>> getBranches() async {
+    final snapshot = await branchesRef.get();
 
-if (!snapshot.exists || snapshot.value == null) {
-return [];
-}
+    if (!snapshot.exists || snapshot.value == null) {
+      return [];
+    }
 
-final data = Map<dynamic, dynamic>.from(
-snapshot.value as Map,
-);
+    final data = Map<dynamic, dynamic>.from(
+      snapshot.value as Map,
+    );
 
-return data.entries.map((e) {
-return BranchModel.fromMap(
-e.key.toString(),
-Map<String, dynamic>.from(
-e.value as Map,
-),
-);
-}).toList();
-}
+    return data.entries.map((e) {
+      return BranchModel.fromMap(
+        e.key.toString(),
+        Map<String, dynamic>.from(
+          e.value as Map,
+        ),
+      );
+    }).toList();
+  }
 //=========================================
 // جلب فرع واحد
 //=========================================
 
-Future<BranchModel?> getBranch(
-String branchId,
-) async {
-final snapshot =
-await branchesRef.child(branchId).get();
+  Future<BranchModel?> getBranch(
+      String branchId,
+      ) async {
+    final snapshot =
+    await branchesRef.child(branchId).get();
 
-if (!snapshot.exists || snapshot.value == null) {
-return null;
-}
+    if (!snapshot.exists || snapshot.value == null) {
+      return null;
+    }
 
-return BranchModel.fromMap(
-branchId,
-Map<String, dynamic>.from(
-snapshot.value as Map,
-),
-);
-}
+    return BranchModel.fromMap(
+      branchId,
+      Map<String, dynamic>.from(
+        snapshot.value as Map,
+      ),
+    );
+  }
 
 //=========================================
 // جلب فروع محافظة معينة
 //=========================================
 
-Future<List<BranchModel>> getGovernorateBranches(
-String governorateId,
-) async {
-final branches = await getBranches();
+  Future<List<BranchModel>> getGovernorateBranches(
+      String governorateId,
+      ) async {
+    final branches = await getBranches();
 
-return branches.where((branch) {
-return branch.governorateId ==
-governorateId;
-}).toList();
-}
+    return branches.where((branch) {
+      return branch.governorateId ==
+          governorateId;
+    }).toList();
+  }
 
 //=========================================
 // التحقق من وجود الفرع
 //=========================================
 
-Future<bool> branchExists(
-String branchId,
-) async {
-final snapshot =
-await branchesRef.child(branchId).get();
+  Future<bool> branchExists(
+      String branchId,
+      ) async {
+    final snapshot =
+    await branchesRef.child(branchId).get();
 
-return snapshot.exists;
-}
+    return snapshot.exists;
+  }
 
 //=========================================
 // تحديث فرع
 //=========================================
 
-Future<void> updateBranch(
-BranchModel branch,
-) async {
-await branchesRef
-.child(branch.id)
-.update(
-branch.copyWith(
-updatedAt: DateTime.now(),
-).toMap(),
-);
-}
+  Future<void> updateBranch(
+      BranchModel branch,
+      ) async {
+    await branchesRef
+        .child(branch.id)
+        .update(
+      branch.copyWith(
+        updatedAt: DateTime.now(),
+      ).toMap(),
+    );
+  }
   Future<void> updateDefaultBranchesFields() async {
 
 
@@ -212,8 +222,9 @@ updatedAt: DateTime.now(),
     await branchesRef.get();
 
 
-    if(!snapshot.exists)
+    if(!snapshot.exists) {
       return;
+    }
 
 
     final data =
@@ -250,133 +261,194 @@ updatedAt: DateTime.now(),
 // تحديث مدير الفرع
 //=========================================
 
-Future<void> updateManager({
-required String branchId,
-required String managerId,
-required String managerName,
-}) async {
-await branchesRef
-.child(branchId)
-.update({
-"managerId": managerId,
-"managerName": managerName,
-"updatedAt":
-DateTime.now().toIso8601String(),
-});
-}
+  Future<void> updateManager({
+    required String branchId,
+    required String managerId,
+    required String managerName,
+  }) async {
+    await branchesRef
+        .child(branchId)
+        .update({
+      "managerId": managerId,
+      "managerName": managerName,
+      "updatedAt":
+      DateTime.now().toIso8601String(),
+    });
+  }
 
 //=========================================
 // تحديث عدد المحطات
 //=========================================
 
-Future<void> updateStationsCount({
-required String branchId,
-required int governmentStations,
-required int privateStations,
-}) async {
-await branchesRef
-.child(branchId)
-.update({
-"governmentStations":
-governmentStations,
-"privateStations":
-privateStations,
-"updatedAt":
-DateTime.now().toIso8601String(),
-});
-}
+  Future<void> updateStationsCount({
+    required String branchId,
+    required int governmentStations,
+    required int privateStations,
+  }) async {
+    await branchesRef
+        .child(branchId)
+        .update({
+      "governmentStations":
+      governmentStations,
+      "privateStations":
+      privateStations,
+      "updatedAt":
+      DateTime.now().toIso8601String(),
+    });
+  }
 
 //=========================================
 // تحديث عدد المستخدمين
 //=========================================
 
-Future<void> updateUsersCount({
-required String branchId,
-required int usersCount,
-}) async {
-await branchesRef
-.child(branchId)
-.update({
-"usersCount": usersCount,
-"updatedAt":
-DateTime.now().toIso8601String(),
-});
-}
+  Future<void> updateUsersCount({
+    required String branchId,
+    required int usersCount,
+  }) async {
+    await branchesRef
+        .child(branchId)
+        .update({
+      "usersCount": usersCount,
+      "updatedAt":
+      DateTime.now().toIso8601String(),
+    });
+  }
 
 //=========================================
 // تفعيل الفرع
 //=========================================
 
-Future<void> activateBranch(
-String branchId,
-) async {
-await branchesRef
-.child(branchId)
-.update({
-"active": true,
-"updatedAt":
-DateTime.now().toIso8601String(),
-});
-}
+  Future<void> activateBranch(
+      String branchId,
+      ) async {
+    await branchesRef
+        .child(branchId)
+        .update({
+      "active": true,
+      "updatedAt":
+      DateTime.now().toIso8601String(),
+    });
+  }
 
 //=========================================
 // إيقاف الفرع
 //=========================================
 
-Future<void> deactivateBranch(
-String branchId,
-) async {
-await branchesRef
-.child(branchId)
-.update({
-"active": false,
-"updatedAt":
-DateTime.now().toIso8601String(),
-});
-}
+  Future<void> deactivateBranch(
+      String branchId,
+      ) async {
+    await branchesRef
+        .child(branchId)
+        .update({
+      "active": false,
+      "updatedAt":
+      DateTime.now().toIso8601String(),
+    });
+  }
   //=========================================
   // حذف فرع
   //=========================================
 
-  Future<void> deleteBranch(
-      String branchId,
-      ) async {
+  Future<void> deleteBranch(String branchId) async {
+    final updates = <String, Object?>{};
 
-    // جلب بيانات الفرع قبل الحذف
-    final branchSnapshot =
-    await branchesRef.child(branchId).get();
+    // =========================================================
+    // حذف مدير الفرع المسجل داخل بيانات الفرع
+    // =========================================================
+    final branchSnapshot = await branchesRef.child(branchId).get();
 
-
-    if(branchSnapshot.exists &&
-        branchSnapshot.value != null){
-
-      final branch =
-      Map<String,dynamic>.from(
+    if (branchSnapshot.exists && branchSnapshot.value != null) {
+      final branch = Map<String, dynamic>.from(
         branchSnapshot.value as Map,
       );
 
+      final managerId = branch["managerId"]?.toString() ?? "";
 
-      final managerId =
-          branch["managerId"] ?? "";
-
-
-      // حذف حساب مدير الفرع
-      if(managerId.toString().isNotEmpty){
-
-        await usersRef
-            .child(managerId)
-            .remove();
-
+      if (managerId.isNotEmpty) {
+        updates["users/$managerId"] = null;
       }
-
     }
 
+    // =========================================================
+    // حذف جميع المحطات التابعة للفرع
+    // =========================================================
+    final stationsSnapshot = await _database
+        .ref("stations")
+        .orderByChild("branchId")
+        .equalTo(branchId)
+        .get();
 
-    // حذف الفرع
-    await branchesRef
-        .child(branchId)
-        .remove();
+    if (stationsSnapshot.exists &&
+        stationsSnapshot.value != null) {
+      final stations = Map<dynamic, dynamic>.from(
+        stationsSnapshot.value as Map,
+      );
 
+      for (final entry in stations.entries) {
+        updates["stations/${entry.key}"] = null;
+      }
+    }
+
+    // =========================================================
+    // حذف المحطات المعلقة التابعة للفرع
+    // =========================================================
+    final pendingStationsSnapshot = await _database
+        .ref("pendingStations")
+        .orderByChild("branchId")
+        .equalTo(branchId)
+        .get();
+
+    if (pendingStationsSnapshot.exists &&
+        pendingStationsSnapshot.value != null) {
+      final pendingStations =
+      Map<dynamic, dynamic>.from(
+        pendingStationsSnapshot.value as Map,
+      );
+
+      for (final entry in pendingStations.entries) {
+        updates["pendingStations/${entry.key}"] = null;
+      }
+    }
+
+    // =========================================================
+    // حذف حسابات المستخدمين المرتبطة بالفرع
+    // مدير الفرع + مدراء المحطات
+    // =========================================================
+    final usersSnapshot = await usersRef
+        .orderByChild("branchId")
+        .equalTo(branchId)
+        .get();
+
+    if (usersSnapshot.exists &&
+        usersSnapshot.value != null) {
+      final users = Map<dynamic, dynamic>.from(
+        usersSnapshot.value as Map,
+      );
+
+      for (final entry in users.entries) {
+        final data = Map<String, dynamic>.from(
+          entry.value as Map,
+        );
+
+        final role = data["role"]?.toString() ?? "";
+
+        if (role == "branchManager" ||
+            role == "branch_manager" ||
+            role == "stationManager" ||
+            role == "station_manager" ||
+            role == "station") {
+          updates["users/${entry.key}"] = null;
+        }
+      }
+    }
+
+    // =========================================================
+    // حذف الفرع نفسه
+    // =========================================================
+    updates["branches/$branchId"] = null;
+
+    // تنفيذ الحذف كله دفعة واحدة
+    await _database.ref().update(updates);
   }
 
   //=========================================

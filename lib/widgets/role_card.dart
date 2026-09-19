@@ -9,6 +9,7 @@ class RoleCard extends StatefulWidget {
   final String subtitle;
   final Color? color;
   final VoidCallback onTap;
+  final bool compact;
 
   const RoleCard({
     super.key,
@@ -17,6 +18,7 @@ class RoleCard extends StatefulWidget {
     required this.subtitle,
     this.color,
     required this.onTap,
+    this.compact = false,
   });
 
   @override
@@ -30,6 +32,7 @@ class _RoleCardState extends State<RoleCard> {
   @override
   Widget build(BuildContext context) {
     final cardColor = widget.color ?? AppColors.primary;
+    final compact = widget.compact;
 
     return MouseRegion(
       onEnter: (_) => setState(() => hover = true),
@@ -45,7 +48,7 @@ class _RoleCardState extends State<RoleCard> {
           borderRadius: BorderRadius.circular(24),
           child: InkWell(
             borderRadius: BorderRadius.circular(24),
-            splashColor: cardColor.withOpacity(.15),
+            splashColor: cardColor.withValues(alpha: .15),
             highlightColor: Colors.transparent,
             onTapDown: (_) => setState(() => pressed = true),
             onTapUp: (_) => setState(() => pressed = false),
@@ -54,7 +57,7 @@ class _RoleCardState extends State<RoleCard> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
-              padding: const EdgeInsets.all(18),
+              padding: EdgeInsets.all(compact ? 11 : 18),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(24),
@@ -65,7 +68,7 @@ class _RoleCardState extends State<RoleCard> {
                 boxShadow: [
                   BoxShadow(
                     color: hover
-                        ? cardColor.withOpacity(.20)
+                        ? cardColor.withValues(alpha: .20)
                         : AppColors.shadow,
                     blurRadius: hover ? 24 : 12,
                     offset: const Offset(0, 8),
@@ -76,20 +79,20 @@ class _RoleCardState extends State<RoleCard> {
                 children: [
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
-                    width: 64,
-                    height: 64,
+                    width: compact ? 48 : 64,
+                    height: compact ? 48 : 64,
                     decoration: BoxDecoration(
-                      color: cardColor.withOpacity(.12),
-                      borderRadius: BorderRadius.circular(18),
+                      color: cardColor.withValues(alpha: .12),
+                      borderRadius: BorderRadius.circular(compact ? 14 : 18),
                     ),
                     child: Icon(
                       widget.icon,
                       color: cardColor,
-                      size: 34,
+                      size: compact ? 28 : 34,
                     ),
                   ),
 
-                  const SizedBox(width: 18),
+                  SizedBox(width: compact ? 12 : 18),
 
                   Expanded(
                     child: Column(
@@ -97,17 +100,22 @@ class _RoleCardState extends State<RoleCard> {
                       children: [
                         Text(
                           widget.title,
-                          style: const TextStyle(
-                            fontSize: 19,
+                          style: TextStyle(
+                            fontSize: compact ? 17 : 19,
                             fontWeight: FontWeight.bold,
                             color: AppColors.text,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        SizedBox(height: compact ? 3 : 6),
                         Text(
                           widget.subtitle,
-                          style: const TextStyle(
-                            fontSize: 14,
+                          maxLines: compact ? 1 : null,
+                          overflow:
+                          compact
+                              ? TextOverflow.ellipsis
+                              : null,
+                          style: TextStyle(
+                            fontSize: compact ? 12.5 : 14,
                             color: AppColors.subtitle,
                           ),
                         ),
@@ -123,7 +131,7 @@ class _RoleCardState extends State<RoleCard> {
                     child: Icon(
                       Icons.arrow_forward_ios_rounded,
                       color: cardColor,
-                      size: 20,
+                      size: compact ? 18 : 20,
                     ),
                   ),
                 ],

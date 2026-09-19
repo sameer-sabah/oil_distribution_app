@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/station.dart';
-import '../../../services/station_service.dart';
+import '../models/station.dart';
+import '../services/station_service.dart';
 
-import '../../../widgets/station_card.dart';
+import '../widgets/station_card.dart';
 
 import 'station_details_screen.dart';
 import 'edit_station_screen.dart';
-import '../../../screens/send_notification_screen.dart';
+import 'send_notification_screen.dart';
 
 
 
@@ -202,8 +202,9 @@ class _PrivateStationsScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 
@@ -778,9 +779,9 @@ class _PrivateStationsScreenState
 
 
 
-          if(filteredStations.isEmpty)
-
+          if(filteredStations.isEmpty) {
             return;
+          }
 
 
 
@@ -1036,9 +1037,9 @@ class _PrivateStationsScreenState
 
 
 
-    if(result != true)
-
+    if(result != true) {
       return;
+    }
 
 
 
@@ -1063,9 +1064,9 @@ class _PrivateStationsScreenState
 
 
 
-      if(!mounted)
-
+      if(!mounted) {
         return;
+      }
 
 
 
@@ -1125,9 +1126,9 @@ class _PrivateStationsScreenState
 
 
 
-      if(!mounted)
-
+      if(!mounted) {
         return;
+      }
 
 
 

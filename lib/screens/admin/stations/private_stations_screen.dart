@@ -100,8 +100,9 @@ class _PrivateStationsScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 

@@ -1,3 +1,22 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+// =========================================================
+// تحميل بيانات مفتاح التوقيع
+// =========================================================
+
+val keystorePropertiesFile =
+    rootProject.file("key.properties")
+
+val keystoreProperties =
+    Properties()
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(
+        FileInputStream(keystorePropertiesFile)
+    )
+}
+
 plugins {
     id("com.android.application")
     id("dev.flutter.flutter-gradle-plugin")
@@ -5,37 +24,75 @@ plugins {
 }
 
 android {
-    namespace = "com.example.oil_distribution_app"
+    namespace = "com.samir.nafithat"
 
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     // =========================================================
     // Java 17 + Core Library Desugaring
-    // مطلوب لـ flutter_local_notifications
     // =========================================================
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
 
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility =
+            JavaVersion.VERSION_17
+
+        targetCompatibility =
+            JavaVersion.VERSION_17
     }
 
     defaultConfig {
-        applicationId = "com.example.oil_distribution_app"
+        applicationId =
+            "com.samir.nafithat"
 
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
 
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        targetSdk = 35
+
+        versionCode =
+            flutter.versionCode
+
+        versionName =
+            flutter.versionName
     }
+
+    // =========================================================
+    // Release Signing
+    // =========================================================
+
+    signingConfigs {
+        create("release") {
+            keyAlias =
+                keystoreProperties["keyAlias"] as String
+
+            keyPassword =
+                keystoreProperties["keyPassword"] as String
+
+            storeFile =
+                file(
+                    keystoreProperties["storeFile"]
+                            as String
+                )
+
+            storePassword =
+                keystoreProperties["storePassword"]
+                        as String
+        }
+    }
+
+    // =========================================================
+    // Build Types
+    // =========================================================
 
     buildTypes {
         release {
-            // حالياً نستخدم Debug signing
-            // ويمكن تغييره لاحقاً عند تجهيز التطبيق للنشر
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig =
+                signingConfigs.getByName("release")
+
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }

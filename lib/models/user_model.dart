@@ -309,11 +309,9 @@ class AppUser {
 
 
 
-      "password":
-      password,
-
-
-
+      // SECURITY:
+      // كلمة المرور تبقى مؤقتاً داخل AppUser عند إنشاء حساب Firebase Auth فقط.
+      // لا يتم حفظها في Realtime Database.
       "email":
       email,
 

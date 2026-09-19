@@ -1,0 +1,62 @@
+[1mdiff --git a/pubspec.yaml b/pubspec.yaml[m
+[1mindex 66fddc0..e90dcff 100644[m
+[1m--- a/pubspec.yaml[m
+[1m+++ b/pubspec.yaml[m
+[36m@@ -16,12 +16,13 @@[m [mdependencies:[m
+   # ===========================[m
+   # Firebase[m
+   # ===========================[m
+[31m-  firebase_core: ^4.0.0[m
+[31m-  firebase_auth: ^6.0.0[m
+[32m+[m[32m  firebase_core: ^4.13.0[m
+[32m+[m[32m  firebase_auth: ^6.0.1[m
+   firebase_database: ^12.0.0[m
+[31m-  cloud_firestore: ^6.0.0[m
+[31m-  firebase_messaging: ^16.0.0[m
+[31m-  firebase_storage: ^13.0.0[m
+[32m+[m[32m  cloud_firestore: ^6.7.1[m
+[32m+[m[32m  firebase_messaging: ^16.0.4[m
+[32m+[m[32m  firebase_storage: ^13.4.5[m
+[32m+[m[32m  cloud_functions: ^6.3.6[m
+ [m
+   # ===========================[m
+   # State Management[m
+[36m@@ -38,7 +39,7 @@[m [mdependencies:[m
+   # ===========================[m
+   # File Picker & Images[m
+   # ===========================[m
+[31m-  image_picker: ^1.2.0[m
+[32m+[m[32m  image_picker: ^1.2.3[m
+   file_picker: ^10.3.2[m
+   open_filex: ^4.7.0[m
+ [m
+[36m@@ -71,15 +72,27 @@[m [mdependencies:[m
+   # ===========================[m
+   google_fonts: ^6.3.0[m
+   flutter_animate: ^4.5.2[m
+[31m-  lottie: ^3.3.1[m
+[32m+[m[32m  lottie: ^3.3.0[m
+   flutter_local_notifications: ^22.3.0[m
+ [m
+[31m-dev_dependencies:[m
+[32m+[m[32m  # ===========================[m
+[32m+[m[32m  # Files / PDF / Excel[m
+[32m+[m[32m  # ===========================[m
+[32m+[m[32m  excel: ^4.0.6[m
+[32m+[m[32m  pdf: ^3.12.0[m
+[32m+[m[32m  printing: ^5.15.0[m
+[32m+[m[32m  share_plus: ^12.0.2[m
+[32m+[m[32m  path_provider: ^2.1.6[m
+[32m+[m[32m  cross_file: ^0.3.5+4[m
+ [m
+[32m+[m[32mdev_dependencies:[m
+   flutter_test:[m
+     sdk: flutter[m
+[32m+[m
+   flutter_launcher_icons: ^0.14.4[m
+   flutter_lints: ^6.0.0[m
+[32m+[m[32m  device_info_plus: ^11.5.0[m
+[32m+[m
+ flutter_launcher_icons:[m
+   android: true[m
+   ios: true[m

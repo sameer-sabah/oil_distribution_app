@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PushNotificationService {
   PushNotificationService._();
@@ -30,19 +31,16 @@ class PushNotificationService {
   // Local Notifications
   // =========================================================
 
-  final FlutterLocalNotificationsPlugin
-  localNotifications =
+  final FlutterLocalNotificationsPlugin localNotifications =
   FlutterLocalNotificationsPlugin();
 
   // =========================================================
   // Subscriptions
   // =========================================================
 
-  StreamSubscription<RemoteMessage>?
-  _foregroundSubscription;
+  StreamSubscription<RemoteMessage>? _foregroundSubscription;
 
-  StreamSubscription<String>?
-  _tokenSubscription;
+  StreamSubscription<String>? _tokenSubscription;
 
   StreamSubscription<DatabaseEvent>?
   _publicNotificationSubscription;
@@ -61,8 +59,6 @@ class PushNotificationService {
   //
   // true = جهاز مواطن
   // false = ليس جهاز مواطن
-  //
-  // مهم حتى لا يتم تسجيل أجهزة الموظفين كأجهزة مواطنين.
   // =========================================================
 
   bool _isCitizenDevice = false;
@@ -70,6 +66,7 @@ class PushNotificationService {
   // =========================================================
   // تهيئة خدمة الإشعارات
   // =========================================================
+
   Future<void> initialize({
     bool isCitizen = false,
   }) async {
@@ -149,14 +146,6 @@ class PushNotificationService {
     );
 
     // ---------------------------------------------------------
-    // 5. Background handler
-    // ---------------------------------------------------------
-
-    FirebaseMessaging.onBackgroundMessage(
-      firebaseMessagingBackgroundHandler,
-    );
-
-    // ---------------------------------------------------------
     // 6. الحصول على FCM Token
     // ---------------------------------------------------------
 
@@ -179,10 +168,6 @@ class PushNotificationService {
 
     // ---------------------------------------------------------
     // 7. إذا كان الجهاز مواطن
-    //
-    // نحفظ Token في:
-    //
-    // deviceTokens/citizens
     // ---------------------------------------------------------
 
     if (_isCitizenDevice) {
@@ -191,19 +176,15 @@ class PushNotificationService {
 
     // ---------------------------------------------------------
     // 8. مراقبة الإشعارات العامة للمواطنين
-    //
-    // notifications/public
     // ---------------------------------------------------------
 
     if (_isCitizenDevice) {
-      if (_isCitizenDevice) {
-        try {
-          await startPublicNotificationsListener();
-        } catch (e) {
-          debugPrint(
-            "تعذر تشغيل Listener الإشعارات العامة: $e",
-          );
-        }
+      try {
+        await startPublicNotificationsListener();
+      } catch (e) {
+        debugPrint(
+          "تعذر تشغيل Listener الإشعارات العامة: $e",
+        );
       }
     }
 
@@ -211,8 +192,7 @@ class PushNotificationService {
     // 9. استقبال FCM عندما التطبيق مفتوح
     // ---------------------------------------------------------
 
-    await _foregroundSubscription
-        ?.cancel();
+    await _foregroundSubscription?.cancel();
 
     _foregroundSubscription =
         FirebaseMessaging.onMessage.listen(
@@ -272,8 +252,7 @@ class PushNotificationService {
     // 12. مراقبة تغير FCM Token
     // ---------------------------------------------------------
 
-    await _tokenSubscription
-        ?.cancel();
+    await _tokenSubscription?.cancel();
 
     _tokenSubscription =
         messaging.onTokenRefresh.listen(
@@ -282,8 +261,9 @@ class PushNotificationService {
               "FCM Token تغير: $newToken",
             );
 
-            // فقط جهاز المواطن يسجل Token
-            // داخل deviceTokens/citizens
+            // المواطن فقط يحدث Token المواطن.
+            // المستخدم المسجل دخوله يعالج Tokenه في
+            // saveCurrentUserToken().
             if (_isCitizenDevice) {
               await updateCitizenToken(
                 newToken,
@@ -296,11 +276,7 @@ class PushNotificationService {
   // =========================================================
   // إشعارات المواطنين العامة
   //
-  // المسار:
-  //
   // notifications/public/{notificationId}
-  //
-  // لا يحتاج المواطن تسجيل دخول.
   // =========================================================
 
   Future<void> startPublicNotificationsListener() async {
@@ -309,19 +285,9 @@ class PushNotificationService {
       "notifications/public",
     );
 
-    // ---------------------------------------------------------
-    // إيقاف Listener قديم
-    // ---------------------------------------------------------
+    await _publicNotificationSubscription?.cancel();
 
-    await _publicNotificationSubscription
-        ?.cancel();
-
-    // ---------------------------------------------------------
-    // قراءة الإشعارات الموجودة مسبقاً
-    //
-    // حتى لا تظهر للمواطن كلها عند تشغيل التطبيق.
-    // ---------------------------------------------------------
-
+    // قراءة الإشعارات القديمة لمنع ظهورها مرة أخرى
     final initialSnapshot =
     await ref.get();
 
@@ -339,10 +305,7 @@ class PushNotificationService {
       }
     }
 
-    // ---------------------------------------------------------
     // مراقبة الإشعارات الجديدة
-    // ---------------------------------------------------------
-
     _publicNotificationSubscription =
         ref.onChildAdded.listen(
               (event) async {
@@ -357,9 +320,9 @@ class PushNotificationService {
               final uniqueId =
                   "public_$id";
 
-              // منع التكرار
-              if (_shownNotificationIds
-                  .contains(uniqueId)) {
+              if (_shownNotificationIds.contains(
+                uniqueId,
+              )) {
                 return;
               }
 
@@ -371,8 +334,7 @@ class PushNotificationService {
                 return;
               }
 
-              if (event.snapshot.value
-              is! Map) {
+              if (event.snapshot.value is! Map) {
                 return;
               }
 
@@ -398,8 +360,7 @@ class PushNotificationService {
                 id: id.hashCode,
                 title: title,
                 body: body,
-                payload:
-                "public:$id",
+                payload: "public:$id",
               );
             } catch (e) {
               debugPrint(
@@ -417,10 +378,7 @@ class PushNotificationService {
   // =========================================================
   // إشعارات مدير المحطة
   //
-  // المسار:
-  //
   // notifications/{stationId}/{notificationId}
-  //
   // =========================================================
 
   Future<void> startStationNotificationsListener(
@@ -439,19 +397,9 @@ class PushNotificationService {
         .ref("notifications")
         .child(stationId);
 
-    // ---------------------------------------------------------
-    // إيقاف Listener سابق
-    // ---------------------------------------------------------
+    await _stationNotificationSubscription?.cancel();
 
-    await _stationNotificationSubscription
-        ?.cancel();
-
-    // ---------------------------------------------------------
-    // قراءة الإشعارات الموجودة مسبقاً
-    //
-    // حتى لا تظهر القديمة مرة أخرى.
-    // ---------------------------------------------------------
-
+    // قراءة الإشعارات القديمة
     final initialSnapshot =
     await ref.get();
 
@@ -469,10 +417,7 @@ class PushNotificationService {
       }
     }
 
-    // ---------------------------------------------------------
     // مراقبة الإشعارات الجديدة
-    // ---------------------------------------------------------
-
     _stationNotificationSubscription =
         ref.onChildAdded.listen(
               (event) async {
@@ -487,9 +432,9 @@ class PushNotificationService {
               final uniqueId =
                   "${stationId}_$id";
 
-              // منع التكرار
-              if (_shownNotificationIds
-                  .contains(uniqueId)) {
+              if (_shownNotificationIds.contains(
+                uniqueId,
+              )) {
                 return;
               }
 
@@ -501,8 +446,7 @@ class PushNotificationService {
                 return;
               }
 
-              if (event.snapshot.value
-              is! Map) {
+              if (event.snapshot.value is! Map) {
                 return;
               }
 
@@ -583,8 +527,6 @@ class PushNotificationService {
 
   // =========================================================
   // Background Message Handler
-  //
-  // خاص بـ FCM
   // =========================================================
 
   @pragma('vm:entry-point')
@@ -640,7 +582,8 @@ class PushNotificationService {
           .remainder(100000),
       title: title,
       body: body,
-      notificationDetails: const NotificationDetails(
+      notificationDetails:
+      const NotificationDetails(
         android: details,
       ),
       payload: message.data.toString(),
@@ -656,35 +599,79 @@ class PushNotificationService {
   }
 
   // =========================================================
-  // حفظ Token للمستخدم
+  // حفظ Token للمستخدم الحالي
   //
-  // مدير المحطة / الموظف / المدير
+  // users/{currentAuthUid}/fcmToken
   //
-  // users/{userId}/fcmToken
+  // الحماية:
+  // لا نسمح بكتابة Token إلى UID مختلف.
   // =========================================================
 
   Future<void> saveFcmToken({
-    required String userId,
+    String? userId,
     required String token,
   }) async {
+    final authUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (authUser == null) {
+      debugPrint(
+        "FCM: لا يوجد مستخدم مسجل دخول",
+      );
+      return;
+    }
+
+    final currentUid =
+        authUser.uid;
+
+    final requestedUid =
+    userId?.trim();
+
+    if (requestedUid != null &&
+        requestedUid.isNotEmpty &&
+        requestedUid != currentUid) {
+      debugPrint(
+        "FCM: تم منع تحديث Token لمستخدم مختلف. "
+            "current=$currentUid, requested=$requestedUid",
+      );
+      return;
+    }
+
     await database
         .ref("users")
-        .child(userId)
+        .child(currentUid)
         .update({
       "fcmToken": token,
       "fcmTokenUpdatedAt":
       DateTime.now()
           .toIso8601String(),
     });
+
+    debugPrint(
+      "تم حفظ FCM Token للمستخدم الحالي: "
+          "$currentUid",
+    );
   }
 
   // =========================================================
   // حفظ Token المستخدم الحالي
+  //
+  // userId اختياري حتى لا تنكسر الاستدعاءات القديمة.
   // =========================================================
 
   Future<void> saveCurrentUserToken({
-    required String userId,
+    String? userId,
   }) async {
+    final authUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (authUser == null) {
+      debugPrint(
+        "FCM: لا يوجد مستخدم مسجل دخول",
+      );
+      return;
+    }
+
     final token =
     await getToken();
 
@@ -693,26 +680,17 @@ class PushNotificationService {
       debugPrint(
         "FCM Token غير موجود",
       );
-
       return;
     }
 
     await saveFcmToken(
-      userId: userId,
+      userId: authUser.uid,
       token: token,
-    );
-
-    debugPrint(
-      "تم حفظ FCM Token للمستخدم: "
-          "$userId",
     );
   }
 
   // =========================================================
   // مراقبة تغير Token
-  //
-  // هذه الدالة أبقيتها حتى لا تتأثر
-  // الأكواد الأخرى التي تستخدمها.
   // =========================================================
 
   StreamSubscription<String>
@@ -730,19 +708,16 @@ class PushNotificationService {
   // =========================================================
   // حفظ Token المواطن
   //
-  // المسار:
-  //
   // deviceTokens/citizens/{generatedId}
-  //
-  // نستخدم push() حتى لا نضع FCM Token
-  // كمفتاح Firebase.
   // =========================================================
 
   Future<void> saveCitizenToken() async {
     try {
-      final token = await messaging.getToken();
+      final token =
+      await messaging.getToken();
 
-      if (token == null || token.isEmpty) {
+      if (token == null ||
+          token.isEmpty) {
         debugPrint(
           "FCM Token المواطن غير موجود",
         );
@@ -750,23 +725,23 @@ class PushNotificationService {
       }
 
       final ref =
-      database.ref("deviceTokens/citizens");
+      database.ref(
+        "deviceTokens/citizens",
+      );
 
-      // =======================================================
-      // ننشئ ID آمن بواسطة Firebase
-      // ولا نستخدم FCM Token كمفتاح
-      // =======================================================
-
-      final deviceRef = ref.push();
+      final deviceRef =
+      ref.push();
 
       await deviceRef.set({
         "token": token,
         "active": true,
         "platform": "android",
         "createdAt":
-        DateTime.now().toIso8601String(),
+        DateTime.now()
+            .toIso8601String(),
         "updatedAt":
-        DateTime.now().toIso8601String(),
+        DateTime.now()
+            .toIso8601String(),
       });
 
       debugPrint(
@@ -799,116 +774,88 @@ class PushNotificationService {
       "deviceTokens/citizens",
     );
 
-    final snapshot =
-    await ref.get();
+    try {
+      final snapshot =
+      await ref.get();
 
-    if (snapshot.exists &&
-        snapshot.value is Map) {
-      final data =
-      Map<dynamic, dynamic>.from(
-        snapshot.value as Map,
-      );
+      if (snapshot.exists &&
+          snapshot.value is Map) {
+        final data =
+        Map<dynamic, dynamic>.from(
+          snapshot.value as Map,
+        );
 
-      String? oldId;
+        String? oldId;
 
-      for (final entry
-      in data.entries) {
-        final item =
-            entry.value;
+        for (final entry in data.entries) {
+          final item =
+              entry.value;
 
-        if (item is Map &&
-            item["token"] ==
-                newToken) {
-          oldId =
-              entry.key.toString();
+          if (item is Map &&
+              item["token"] == newToken) {
+            oldId =
+                entry.key.toString();
+            break;
+          }
+        }
 
-          break;
+        if (oldId != null) {
+          await ref
+              .child(oldId)
+              .update({
+            "active": true,
+            "updatedAt":
+            DateTime.now()
+                .toIso8601String(),
+          });
+
+          debugPrint(
+            "تم تحديث Token المواطن",
+          );
+
+          return;
         }
       }
 
-      if (oldId != null) {
-        await ref
-            .child(oldId)
-            .update({
-          "active": true,
-          "updatedAt":
-          DateTime.now()
-              .toIso8601String(),
-        });
+      // Token جديد
+      final deviceRef =
+      ref.push();
 
-        debugPrint(
-          "تم تحديث Token المواطن",
-        );
+      await deviceRef.set({
+        "token": newToken,
+        "active": true,
+        "platform": "android",
+        "createdAt":
+        DateTime.now()
+            .toIso8601String(),
+        "updatedAt":
+        DateTime.now()
+            .toIso8601String(),
+      });
 
-        return;
-      }
+      debugPrint(
+        "تم تسجيل Token جديد للمواطن",
+      );
+    } catch (e) {
+      debugPrint(
+        "خطأ في تحديث Token المواطن: $e",
+      );
     }
-
-    // ---------------------------------------------------------
-    // Token جديد
-    // ---------------------------------------------------------
-
-    final deviceRef =
-    ref.push();
-
-    await deviceRef.set({
-      "token": newToken,
-      "active": true,
-      "platform": "android",
-      "createdAt":
-      DateTime.now()
-          .toIso8601String(),
-      "updatedAt":
-      DateTime.now()
-          .toIso8601String(),
-    });
-
-    debugPrint(
-      "تم تسجيل Token جديد للمواطن",
-    );
   }
-
-  // =========================================================
-  // تفعيل إشعارات محطة
-  //
-  // نستدعيها بعد تسجيل دخول مدير المحطة
-  //
-  // مثال:
-  //
-  // await PushNotificationService.instance
-  //     .startStationNotificationsListener(
-  //       stationId,
-  //     );
-  //
-  // =========================================================
 
   // =========================================================
   // إيقاف الخدمة
   // =========================================================
 
   Future<void> dispose() async {
-    await _foregroundSubscription
-        ?.cancel();
+    await _foregroundSubscription?.cancel();
+    await _tokenSubscription?.cancel();
+    await _publicNotificationSubscription?.cancel();
+    await _stationNotificationSubscription?.cancel();
 
-    await _tokenSubscription
-        ?.cancel();
-
-    await _publicNotificationSubscription
-        ?.cancel();
-
-    await _stationNotificationSubscription
-        ?.cancel();
-
-    _foregroundSubscription =
-    null;
-
-    _tokenSubscription =
-    null;
-
-    _publicNotificationSubscription =
-    null;
-
-    _stationNotificationSubscription =
-    null;
+    _foregroundSubscription = null;
+    _tokenSubscription = null;
+    _publicNotificationSubscription = null;
+    _stationNotificationSubscription = null;
   }
 }

@@ -110,8 +110,9 @@ class _MapScreenState
 
 
 
-    if(!enabled)
+    if(!enabled) {
       return;
+    }
 
 
 
@@ -151,8 +152,9 @@ class _MapScreenState
     currentPosition =
     await Geolocator.getCurrentPosition(
 
-      desiredAccuracy:
-      LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
 
     );
 
@@ -201,8 +203,21 @@ class _MapScreenState
 
       }
 
+      else if(station.workingStatus.contains("خاف") || station.workingStatus.contains("خفار") || station.workingStatus == "duty"){
+
+
+        color =
+            BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueViolet,
+            );
+
+
+      }
+
       else if(station.workingStatus ==
-          "تعمل"){
+          "تعمل" ||
+          station.workingStatus ==
+              "مفتوحة"){
 
 
         color =
@@ -307,8 +322,9 @@ class _MapScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 
@@ -337,8 +353,9 @@ class _MapScreenState
 
 
 
-    if(value.trim().isEmpty)
+    if(value.trim().isEmpty) {
       return;
+    }
 
 
 
@@ -763,20 +780,47 @@ class _MapScreenState
 
 
 
+              if (station.supportedProducts["regular95"] == true)
+                Text(
+                  "بنزين عادي: ${station.regular95} لتر",
+                ),
 
-              Text(
+              if (station.supportedProducts["improved95"] == true)
+                Text(
+                  "بنزين محسن: ${station.improved95} لتر",
+                ),
 
-                "بنزين: ${station.regular95}",
+              if (station.supportedProducts["super95"] == true)
+                Text(
+                  "بنزين سوبر: ${station.super95} لتر",
+                ),
 
-              ),
+              if (station.supportedProducts["diesel"] == true)
+                Text(
+                  "ديزل: ${station.diesel} لتر",
+                ),
 
+              if (station.supportedProducts["whiteOil"] == true)
+                Text(
+                  "النفط الأبيض: ${station.whiteOil} لتر",
+                ),
 
+              if (station.supportedProducts["lpg"] == true)
+                Text(
+                  "الغاز السائل: ${station.lpg} لتر",
+                ),
 
-              Text(
-
-                "ديزل: ${station.diesel}",
-
-              ),
+              if (!station.supportedProducts.values.any((v) => v))
+                const Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Text(
+                    "لا توجد منتجات متاحة حاليًا",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
 
 
 

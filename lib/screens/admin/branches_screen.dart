@@ -588,7 +588,7 @@ class _BranchesScreenState
               children:[
                 DropdownButtonFormField<GovernorateModel>(
 
-                  value: selectedGovernorate,
+                  initialValue: selectedGovernorate,
 
                   decoration: const InputDecoration(
 
@@ -801,16 +801,8 @@ class _BranchesScreenState
 
 
 
-                if(!mounted) return;
-
-
-
-                Navigator.pop(
-                  dialogContext,
-                );
-
-
-
+                if (!dialogContext.mounted) return;
+                Navigator.pop(dialogContext);
                 loadBranches();
 
 
@@ -942,13 +934,10 @@ class _BranchesScreenState
 
 
             TextButton(
-
               onPressed: (){
-
                 Navigator.pop(context);
 
               },
-
               child: const Text(
                 "إلغاء",
               ),
@@ -977,15 +966,9 @@ class _BranchesScreenState
                 );
 
 
-                if(!mounted) return;
-
-
+                if (!context.mounted) return;
                 Navigator.pop(context);
-
-
                 loadBranches();
-
-
               },
 
 
@@ -1065,42 +1048,24 @@ class _BranchesScreenState
 
               onPressed: () async {
 
-
                 await notificationService.addNotification(
-
                   userId: branch.managerId,
-
                   title: "تبليغ من الإدارة",
-
-                  message:
-                  messageController.text.trim(),
-
+                  message: messageController.text.trim(),
                   type: "branch",
-
                 );
 
+                if (!context.mounted) return;
 
                 Navigator.pop(context);
 
-
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(
-
+                ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-
-                    content:
-                    Text("تم إرسال التبليغ"),
-
-                    backgroundColor:
-                    Colors.green,
-
+                    content: Text("تم إرسال التبليغ"),
+                    backgroundColor: Colors.green,
                   ),
-
                 );
-
-
               },
-
               child:
               const Text("إرسال"),
 

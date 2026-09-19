@@ -236,8 +236,9 @@ class _EditStationScreenState
   Future<void> save() async {
 
 
-    if(!formKey.currentState!.validate())
+    if(!formKey.currentState!.validate()) {
       return;
+    }
 
 
 
@@ -393,8 +394,9 @@ class _EditStationScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 

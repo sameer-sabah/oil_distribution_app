@@ -104,7 +104,7 @@ class NotificationService {
     // =========================================
 
     if (managerUid == null ||
-        managerUid!.isEmpty) {
+        managerUid.isEmpty) {
       return false;
     }
 
@@ -113,7 +113,7 @@ class NotificationService {
     // =========================================
 
     await addNotification(
-      userId: managerUid!,
+      userId: managerUid,
       title: title,
       message: message,
       type: type,

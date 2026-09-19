@@ -3,37 +3,61 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  //=============================
-  // ألوان هوية OPDC
-  //=============================
+  // =========================
+  // الألوان الأساسية
+  // =========================
 
-  static const Color primary = Color(0xFF0B6B3A);
-  static const Color primaryDark = Color(0xFF084D2A);
-  static const Color secondary = Color(0xFFD4A017);
+  static const Color primary =
+  Color(0xFF1565C0);
 
-  static const Color background = Color(0xFFF5F7FA);
-  static const Color surface = Colors.white;
-  static const Color border = Color(0xFFE4E7EC);
+  static const Color secondary =
+  Color(0xFF00897B);
 
-  static const Color text = Color(0xFF1E293B);
-  static const Color subtitle = Color(0xFF64748B);
+  static const Color background =
+  Color(0xFFF5F7FA);
 
-  static const Color success = Color(0xFF16A34A);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color danger = Color(0xFFDC2626);
-  static const Color info = Color(0xFF2563EB);
+  static const Color surface =
+  Color(0xFFFFFFFF);
 
-  static const Color shadow = Color(0x14000000);
+  static const Color border =
+  Color(0xFFE0E0E0);
 
-  // المنتجات
-  static const Color regularGasoline = Color(0xFF16A34A);
-  static const Color improvedGasoline = Color(0xFFF59E0B);
-  static const Color diesel = Color(0xFF2563EB);
-  static const Color whiteOil = Color(0xFF7C3AED);
-  static const Color lpg = Color(0xFFDC2626);
+  // =========================
+  // ألوان النصوص
+  // =========================
 
-  // حالات التوفر
-  static const Color available = Color(0xFF16A34A);
-  static const Color low = Color(0xFFF59E0B);
-  static const Color unavailable = Color(0xFFDC2626);
+  static const Color text =
+  Color(0xFF212121);
+
+  static const Color subtitle =
+  Color(0xFF757575);
+
+  static const Color textPrimary =
+  Color(0xFF212121);
+
+  static const Color textSecondary =
+  Color(0xFF757575);
+
+  // =========================
+  // الظلال
+  // =========================
+
+  static const Color shadow =
+  Color(0x1A000000);
+
+  // =========================
+  // الحالات
+  // =========================
+
+  static const Color success =
+  Color(0xFF2E7D32);
+
+  static const Color warning =
+  Color(0xFFF9A825);
+
+  static const Color error =
+  Color(0xFFC62828);
+
+  static const Color info =
+  Color(0xFF0277BD);
 }

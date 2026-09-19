@@ -5,158 +5,58 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/station.dart';
 import '../../services/station_service.dart';
-
-
-
 class CitizenMapScreen extends StatefulWidget {
-
   const CitizenMapScreen({
     super.key,
   });
-
-
   @override
   State<CitizenMapScreen> createState() =>
       _CitizenMapScreenState();
-
 }
-
-
-
-
-
-
-
 class _CitizenMapScreenState
     extends State<CitizenMapScreen> {
-
-
-
   final StationService stationService =
       StationService.instance;
-
-
-
   GoogleMapController?
   mapController;
-
-
-
   final Set<Marker> markers = {};
-
   final Set<Polyline> polylines = {};
-
-
-
   List<Station> stations = [];
-
-
-
   Position?
   currentPosition;
-
-
-
   bool loading = true;
-
-
-
-
-
-
-
-
-
   @override
   void initState(){
-
     super.initState();
-
     loadData();
-
   }
-
-
-
-
-
-
-
-
-
   Future<void> loadData() async {
-
-
-
     final enabled =
     await Geolocator.isLocationServiceEnabled();
-
-
-
     if(!enabled){
-
       setLoading(false);
-
       return;
-
     }
-
-
-
-
-
-
-
     LocationPermission permission =
-
     await Geolocator.checkPermission();
-
-
-
-
-
-
     if(permission ==
         LocationPermission.denied){
-
-
-
       permission =
       await Geolocator.requestPermission();
-
-
     }
-
-
-
-
-
-
-
     if(permission ==
         LocationPermission.deniedForever){
-
-
       setLoading(false);
-
       return;
-
     }
-
-
-
-
-
-
-
 
     currentPosition =
 
     await Geolocator.getCurrentPosition(
 
-      desiredAccuracy:
-      LocationAccuracy.high,
-
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
     );
 
 
@@ -192,8 +92,9 @@ class _CitizenMapScreenState
   void setLoading(bool value){
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
     setState(() {
@@ -424,8 +325,9 @@ class _CitizenMapScreenState
 
 
 
-    if(currentPosition == null)
+    if(currentPosition == null) {
       return;
+    }
 
 
 
@@ -587,49 +489,14 @@ class _CitizenMapScreenState
 
 
               const Divider(),
-
-
-
-
-              Text(
-                "بنزين عادي: ${station.regular95} لتر",
-              ),
-
-
-
-              Text(
-                "بنزين محسن: ${station.improved95} لتر",
-              ),
-
-
-
-              Text(
-                "بنزين سوبر: ${station.super95} لتر",
-              ),
-
-
-
-              Text(
-                "ديزل: ${station.diesel} لتر",
-              ),
-
-
-
-              Text(
-                "نفط أبيض: ${station.whiteOil} لتر",
-              ),
-
-
-
-              Text(
-                "غاز: ${station.lpg} لتر",
-              ),
-
-
-
-
-
-
+              const Text("المنتوجات المتوفرة في المحطة:", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              if (station.supportedProducts["regular95"] == true) const Text("• بنزين عادي"),
+              if (station.supportedProducts["improved95"] == true) const Text("• بنزين محسن"),
+              if (station.supportedProducts["super95"] == true) const Text("• بنزين سوبر"),
+              if (station.supportedProducts["diesel"] == true) const Text("• ديزل (زيت الغاز)"),
+              if (station.supportedProducts["whiteOil"] == true) const Text("• نفط أبيض"),
+              if (station.supportedProducts["lpg"] == true) const Text("• غاز سائل"),
               const SizedBox(height:15),
 
 
@@ -941,9 +808,9 @@ class _CitizenMapScreenState
 
 
           if(currentPosition == null ||
-              mapController == null)
-
+              mapController == null) {
             return;
+          }
 
 
 

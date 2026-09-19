@@ -17,7 +17,7 @@ class AnimatedBackground extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.green.withOpacity(.08),
+              color: Colors.green.withValues(alpha: .08),
             ),
           )
               .animate(
@@ -38,7 +38,7 @@ class AnimatedBackground extends StatelessWidget {
             height: 250,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.amber.withOpacity(.08),
+              color: Colors.amber.withValues(alpha: .08),
             ),
           )
               .animate(

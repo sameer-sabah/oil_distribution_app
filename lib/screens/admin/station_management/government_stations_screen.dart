@@ -450,8 +450,9 @@ class _GovernmentStationsScreenState
         onPressed:(){
 
 
-          if(filteredStations.isEmpty)
+          if(filteredStations.isEmpty) {
             return;
+          }
 
 
 
@@ -630,8 +631,9 @@ class _GovernmentStationsScreenState
 
 
 
-    if(result != true)
+    if(result != true) {
       return;
+    }
 
 
 
@@ -645,8 +647,9 @@ class _GovernmentStationsScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 

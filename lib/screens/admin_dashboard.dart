@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'users_screen.dart';
-
 import 'products_screen.dart';
 import 'reports_screen.dart';
+import 'internal_messages_screen.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -13,20 +13,18 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-
   int index = 0;
 
   final pages = const [
     UsersScreen(),
     ProductsScreen(),
     ReportsScreen(),
+    InternalMessagesScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("لوحة الإدارة"),
         backgroundColor: Colors.blue.shade900,
@@ -35,17 +33,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
       body: pages[index],
 
       bottomNavigationBar: NavigationBar(
-
         selectedIndex: index,
 
-        onDestinationSelected: (i){
+        onDestinationSelected: (i) {
           setState(() {
             index = i;
           });
         },
 
         destinations: const [
-
           NavigationDestination(
             icon: Icon(Icons.people),
             label: "المستخدمون",
@@ -61,6 +57,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
             label: "التقارير",
           ),
 
+          NavigationDestination(
+            icon: Icon(Icons.mail),
+            selectedIcon: Icon(Icons.mark_email_unread),
+            label: "المراسلات",
+          ),
         ],
       ),
     );

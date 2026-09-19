@@ -1,0 +1,362 @@
+{
+  "@@locale": "ku",
+
+  "appName": "پەنجەرەی بەرهەمی نەوتی",
+
+  "login": "چوونەژوورەوە",
+  "logout": "چوونەدەرەوە",
+  "username": "ناوی بەکارهێنەر",
+  "password": "وشەی نهێنی",
+  "save": "پاشەکەوتکردن",
+  "cancel": "هەڵوەشاندنەوە",
+  "delete": "سڕینەوە",
+  "edit": "دەستکاریکردن",
+  "add": "زیادکردن",
+  "update": "نوێکردنەوە",
+  "search": "گەڕان",
+  "close": "داخستن",
+  "confirm": "پشتڕاستکردنەوە",
+  "back": "گەڕانەوە",
+  "next": "دواتر",
+  "yes": "بەڵێ",
+  "no": "نەخێر",
+  "loading": "لە بارکردندایە...",
+  "noData": "هیچ زانیارییەک نییە",
+
+  "home": "سەرەکی",
+  "settings": "ڕێکخستنەکان",
+  "notifications": "ئاگادارکردنەوەکان",
+  "about": "دەربارەی ئەپەکە",
+  "contact": "پەیوەندیمان پێوە بکە",
+  "rating": "هەڵسەنگاندنی ئەپەکە",
+  "privacy": "تایبەتمەندی",
+  "terms": "مەرج و یاساکان",
+  "language": "زمان",
+
+  "station": "بەنزینخانە",
+  "stations": "بەنزینخانەکان",
+  "stationManager": "بەڕێوەبەری بەنزینخانە",
+  "branchManager": "بەڕێوەبەری لق",
+  "admin": "بەڕێوەبەری سیستەم",
+  "employee": "کارمەند",
+  "citizen": "هاووڵاتی",
+
+  "stationName": "ناوی بەنزینخانە",
+  "stationType": "جۆری بەنزینخانە",
+  "governorate": "پارێزگا",
+  "district": "قەزا",
+  "branch": "لق",
+  "address": "ناونیشان",
+  "phone": "تەلەفۆن",
+  "managerName": "ناوی بەڕێوەبەر",
+  "managerPhone": "تەلەفۆنی بەڕێوەبەر",
+
+  "fuelQuantities": "بڕی سووتەمەنی",
+  "updateFuelQuantities": "نوێکردنەوەی بڕی سووتەمەنی",
+  "regular95": "بەنزینی ئاسایی",
+  "improved95": "بەنزینی باشکراو",
+  "super95": "بەنزینی سوپەر",
+  "diesel": "گازۆیل",
+  "whiteOil": "نەوتی سپی",
+  "lpg": "گازی شلە",
+
+  "active": "چالاک",
+  "inactive": "ناچالاک",
+  "approved": "پەسەندکراو",
+  "notApproved": "پەسەندنەکراو",
+
+  "registerStation": "تۆمارکردنی بەنزینخانە",
+  "pendingStations": "داواکارییەکانی تۆمارکردنی بەنزینخانە",
+  "approve": "پەسەندکردن",
+  "reject": "ڕەتکردنەوە",
+
+  "success": "کارەکە بە سەرکەوتوویی ئەنجامدرا",
+  "error": "هەڵەیەک ڕوویدا",
+  "saveSuccess": "بە سەرکەوتوویی پاشەکەوتکرا",
+  "updateSuccess": "بە سەرکەوتوویی نوێکرایەوە",
+  "deleteSuccess": "بە سەرکەوتوویی سڕایەوە",
+
+ "chooseLanguage": "زمانی ئەپەکە هەڵبژێرە",
+ "arabic": "عەرەبی",
+ "kurdish": "کوردی",
+ "persian": "فارسی",
+ "english": "ئینگلیزی",
+
+ "settingsTitle": "ڕێکخستنەکان",
+ "general": "گشتی",
+ "ads": "ڕیکلامەکان",
+ "services": "خزمەتگوزارییەکان",
+ "supportAndApp": "پشتگیری و ئەپەکە",
+ "languageSubtitle": "عەرەبی / کوردی / فارسی / English",
+ "notificationsSubtitle": "ئاگادارکردنەوەی بەرهەم و ڕیکلامەکان",
+ "addPaidAd": "زیادکردنی ڕیکلامی پارەدان",
+ "addPaidAdSubtitle": "دروستکردنی ڕیکلام و دیاریکردنی شوێنی پیشاندان",
+ "myAds": "ڕیکلامەکانم",
+ "myAdsSubtitle": "دۆخ، پارەدان، ئامار و درێژکردنەوە",
+ "viewAds": "بینینی ڕیکلامەکان",
+ "viewAdsSubtitle": "ڕیکلامە بڵاوکراوەکان بۆ هاووڵاتیان",
+ "addPaidService": "زیادکردنی خزمەتگوزاری پارەدان",
+ "addPaidServiceSubtitle": "زیادکردنی خزمەتگوزاری بازرگانی بۆ پێداچوونەوە",
+ "myServices": "خزمەتگوزارییەکانم",
+ "myServicesSubtitle": "بەدواداچوون بۆ خزمەتگوزاری و پارەدان و ئامار",
+ "viewServices": "بینینی خزمەتگوزارییەکان",
+ "viewServicesSubtitle": "خزمەتگوزارییە بازرگانییە بڵاوکراوەکان",
+ "paymentsInvoices": "پارەدان و پسوڵەکان",
+ "paymentsInvoicesSubtitle": "بینینی مامەڵەکانی پارەدان و دۆخەکان",
+ "contactUs": "پەیوەندیمان پێوە بکە",
+ "contactUsSubtitle": "ناردنی نامە بۆ بەڕێوەبەرایەتی",
+ "rateApp": "هەڵسەنگاندنی ئەپ",
+ "rateAppSubtitle": "بۆچوونەکەت لەگەڵمان هاوبەش بکە",
+ "aboutApp": "دەربارەی ئەپ",
+ "aboutAppSubtitle": "زانیاری ئەپ و گەشەپێدەر",
+ "privacyPolicy": "سیاسەتی تایبەتمەندی",
+ "privacyPolicySubtitle": "چۆنیەتی مامەڵەکردن لەگەڵ داتا",
+ "termsConditions": "مەرج و ڕێساکان",
+ "termsConditionsSubtitle": "مەرجەکانی ڕیکلام و خزمەتگوزارییەکان",
+ "appVersion": "ژمارەی وەشانی ئەپ",
+ "developer": "گەشەپێدەری ئەپ ئەندازیار سمیر صباح",
+  "@@locale": "ku",
+
+  "appName": "پەنجەرەی بەرهەمی نەوتی",
+
+  "login": "چوونەژوورەوە",
+  "logout": "چوونەدەرەوە",
+  "username": "ناوی بەکارهێنەر",
+  "password": "وشەی نهێنی",
+  "save": "پاشەکەوتکردن",
+  "cancel": "هەڵوەشاندنەوە",
+  "delete": "سڕینەوە",
+  "edit": "دەستکاریکردن",
+  "add": "زیادکردن",
+  "update": "نوێکردنەوە",
+  "search": "گەڕان",
+  "close": "داخستن",
+  "confirm": "پشتڕاستکردنەوە",
+  "back": "گەڕانەوە",
+  "next": "دواتر",
+  "yes": "بەڵێ",
+  "no": "نەخێر",
+  "loading": "لە بارکردندایە...",
+  "noData": "هیچ زانیارییەک نییە",
+
+  "home": "سەرەکی",
+  "settings": "ڕێکخستنەکان",
+  "notifications": "ئاگادارکردنەوەکان",
+  "about": "دەربارەی ئەپەکە",
+  "contact": "پەیوەندیمان پێوە بکە",
+  "rating": "هەڵسەنگاندنی ئەپەکە",
+  "privacy": "تایبەتمەندی",
+  "terms": "مەرج و یاساکان",
+  "language": "زمان",
+
+  "station": "بەنزینخانە",
+  "stations": "بەنزینخانەکان",
+  "stationManager": "بەڕێوەبەری بەنزینخانە",
+  "branchManager": "بەڕێوەبەری لق",
+  "admin": "بەڕێوەبەری سیستەم",
+  "employee": "کارمەند",
+  "citizen": "هاووڵاتی",
+
+  "stationName": "ناوی بەنزینخانە",
+  "stationType": "جۆری بەنزینخانە",
+  "governorate": "پارێزگا",
+  "district": "قەزا",
+  "branch": "لق",
+  "address": "ناونیشان",
+  "phone": "تەلەفۆن",
+  "managerName": "ناوی بەڕێوەبەر",
+  "managerPhone": "تەلەفۆنی بەڕێوەبەر",
+
+  "fuelQuantities": "بڕی سووتەمەنی",
+  "updateFuelQuantities": "نوێکردنەوەی بڕی سووتەمەنی",
+  "regular95": "بەنزینی ئاسایی",
+  "improved95": "بەنزینی باشکراو",
+  "super95": "بەنزینی سوپەر",
+  "diesel": "گازۆیل",
+  "whiteOil": "نەوتی سپی",
+  "lpg": "گازی شلە",
+
+  "active": "چالاک",
+  "inactive": "ناچالاک",
+  "approved": "پەسەندکراو",
+  "notApproved": "پەسەندنەکراو",
+
+  "registerStation": "تۆمارکردنی بەنزینخانە",
+  "pendingStations": "داواکارییەکانی تۆمارکردنی بەنزینخانە",
+  "approve": "پەسەندکردن",
+  "reject": "ڕەتکردنەوە",
+
+  "success": "کارەکە بە سەرکەوتوویی ئەنجامدرا",
+  "error": "هەڵەیەک ڕوویدا",
+  "saveSuccess": "بە سەرکەوتوویی پاشەکەوتکرا",
+  "updateSuccess": "بە سەرکەوتوویی نوێکرایەوە",
+  "deleteSuccess": "بە سەرکەوتوویی سڕایەوە",
+
+  "chooseLanguage": "زمانی ئەپەکە هەڵبژێرە",
+  "arabic": "عەرەبی",
+  "kurdish": "کوردی",
+  "persian": "فارسی",
+  "english": "ئینگلیزی",
+
+  "settingsTitle": "ڕێکخستنەکان",
+  "general": "گشتی",
+  "ads": "ڕیکلامەکان",
+  "services": "خزمەتگوزارییەکان",
+  "supportAndApp": "پشتگیری و ئەپەکە",
+  "languageSubtitle": "عەرەبی / کوردی / فارسی / English",
+  "notificationsSubtitle": "ئاگادارکردنەوەی بەرهەم و ڕیکلامەکان",
+  "addPaidAd": "زیادکردنی ڕیکلامی پارەدان",
+  "addPaidAdSubtitle": "دروستکردنی ڕیکلام و دیاریکردنی شوێنی پیشاندان",
+  "myAds": "ڕیکلامەکانم",
+  "myAdsSubtitle": "دۆخ، پارەدان، ئامار و درێژکردنەوە",
+  "viewAds": "بینینی ڕیکلامەکان",
+  "viewAdsSubtitle": "ڕیکلامە بڵاوکراوەکان بۆ هاووڵاتیان",
+  "addPaidService": "زیادکردنی خزمەتگوزاری پارەدان",
+  "addPaidServiceSubtitle": "زیادکردنی خزمەتگوزاری بازرگانی بۆ پێداچوونەوە",
+  "myServices": "خزمەتگوزارییەکانم",
+  "myServicesSubtitle": "بەدواداچوون بۆ خزمەتگوزاری و پارەدان و ئامار",
+  "viewServices": "بینینی خزمەتگوزارییەکان",
+  "viewServicesSubtitle": "خزمەتگوزارییە بازرگانییە بڵاوکراوەکان",
+  "paymentsInvoices": "پارەدان و پسوڵەکان",
+  "paymentsInvoicesSubtitle": "بینینی مامەڵەکانی پارەدان و دۆخەکان",
+  "contactUs": "پەیوەندیمان پێوە بکە",
+  "contactUsSubtitle": "ناردنی نامە بۆ بەڕێوەبەرایەتی",
+  "rateApp": "هەڵسەنگاندنی ئەپ",
+  "rateAppSubtitle": "بۆچوونەکەت لەگەڵمان هاوبەش بکە",
+  "aboutApp": "دەربارەی ئەپ",
+  "aboutAppSubtitle": "زانیاری ئەپ و گەشەپێدەر",
+  "privacyPolicy": "سیاسەتی تایبەتمەندی",
+  "privacyPolicySubtitle": "چۆنیەتی مامەڵەکردن لەگەڵ داتا",
+  "termsConditions": "مەرج و ڕێساکان",
+  "termsConditionsSubtitle": "مەرجەکانی ڕیکلام و خزمەتگوزارییەکان",
+  "appVersion": "ژمارەی وەشانی ئەپ",
+  "developer": "گەشەپێدەری ئەپ ئەندازیار سمیر صباح",
+
+  "citizenWelcome": "بەخێربێیت بۆ",
+  "citizenSubtitle": "نزیکترین بەنزینخانە و بەردەستبوونی بەرهەمە نەوتییەکان بدۆزەرەوە",
+  "commercialServices": "خزمەتگوزارییە بازرگانییەکان",
+  "commercialServicesSubtitle": "خزمەتگوزارییە بڵاوکراوە و بەردەستەکان بۆ هاووڵاتیان",
+
+  "currentLocation": "شوێنی ئێستات",
+  "detectingLocation": "شوێنەکە دیاریدەکرێت...",
+  "locationNotDetected": "شوێن دیاری نەکراوە",
+  "locationDetected": "شوێنەکەت دیاریکرا",
+  "enableLocationForNearest": "شوێن چالاک بکە بۆ دۆزینەوەی نزیکترین بەنزینخانە",
+
+  "chooseProduct": "جۆری بەرهەم هەڵبژێرە",
+
+  "emergency911": "فریاکەوتنی ٩١١",
+  "importantCitizenAlert": "ئاگادارییەکی گرنگ بۆ هاووڵاتی",
+  "emergencyMessage": "لە کاتی ڕوودانی دۆخی فریاکەوتن یان مەترسی، دەستبەجێ پەیوەندی بە ٩١١ بکە.",
+  "call911": "پەیوەندی بە ٩١١",
+  "emergencyConnectionError": "نەتوانرا پەیوەندی بە فریاکەوتنەوە بکرێت",
+  "emergencyOpenError": "نەتوانرا پەیوەندی فریاکەوتن بکرێتەوە",
+
+  "searchStationOrArea": "گەڕان بۆ بەنزینخانە یان ناوچە...",
+  "availableNearbyStations": "بەنزینخانە بەردەست و نزیکەکانت",
+  "nearestToFarthest": "لە نزیکترینەوە بۆ دوورترین",
+  "noStationsAvailable": "لە ئێستادا هیچ بەنزینخانەیەکی بەردەست نییە",
+  "tryChangeProductOrArea": "جۆری بەرهەم بگۆڕە یان ناوچەیەکی تر بگەڕێ",
+
+  "available": "بەردەستە",
+  "unavailable": "بەردەست نییە",
+  "details": "وردەکاری",
+  "startNavigation": "دەستپێکردنی ڕێنیشاندان",
+  "stationOpen": "بەنزینخانە کراوەیە",
+  "stationClosed": "بەنزینخانە داخراوە",
+  "lastUpdate": "دواین نوێکردنەوە",
+  "liters": "لیتر",
+  "notSpecified": "دیاری نەکراوە",
+
+  "stationCoordinatesMissing": "کۆئۆردیناتی بەنزینخانە بەردەست نییە",
+  "navigationOpenError": "نەتوانرا ڕێنیشاندان بکرێتەوە",
+
+  "stationDetails": "وردەکاری بەنزینخانە",
+  "stationStatus": "دۆخی بەنزینخانە",
+  "lastQuantityUpdate": "دواین نوێکردنەوەی بڕ",
+  "noUpdate": "هیچ نوێکردنەوەیەک نییە",
+  "noProductsAvailable": "لە ئێستادا هیچ بەرهەمێک بەردەست نییە",
+
+  "quantityRegular95": "بەنزینی ئاسایی: {quantity} لیتر",
+  "quantityImproved95": "بەنزینی باشکراو: {quantity} لیتر",
+  "quantitySuper95": "بەنزینی سوپەر: {quantity} لیتر",
+  "quantityDiesel": "گازۆیل: {quantity} لیتر",
+  "quantityWhiteOil": "نەوتی سپی: {quantity} لیتر",
+  "quantityLpg": "گازی شلە: {quantity} لیتر",
+
+  "governorateLabel": "پارێزگا: {governorate}",
+  "districtLabel": "قەزا: {district}",
+  "stationTypeLabel": "جۆری بەنزینخانە: {type}",
+
+  "phoneLabel": "تەلەفۆن",
+  "addressLabel": "ناونیشان",
+
+  "loadStationsError": "نەتوانرا بەنزینخانەکان باربکرێن: {error}",
+  "updateStationsError": "نەتوانرا زانیارییەکان نوێ بکرێنەوە: {error}",
+
+  "@quantityRegular95": {
+    "placeholders": {
+      "quantity": {}
+    }
+  },
+
+  "@quantityImproved95": {
+    "placeholders": {
+      "quantity": {}
+    }
+  },
+
+  "@quantitySuper95": {
+    "placeholders": {
+      "quantity": {}
+    }
+  },
+
+  "@quantityDiesel": {
+    "placeholders": {
+      "quantity": {}
+    }
+  },
+
+  "@quantityWhiteOil": {
+    "placeholders": {
+      "quantity": {}
+    }
+  },
+
+  "@quantityLpg": {
+    "placeholders": {
+      "quantity": {}
+    }
+  },
+
+  "@governorateLabel": {
+    "placeholders": {
+      "governorate": {}
+    }
+  },
+
+  "@districtLabel": {
+    "placeholders": {
+      "district": {}
+    }
+  },
+
+  "@stationTypeLabel": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+
+  "@loadStationsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+
+  "@updateStationsError": {
+    "placeholders": {
+      "error": {}
+    }
+  }
+}

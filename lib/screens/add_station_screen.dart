@@ -229,8 +229,9 @@ class _AddStationScreenState
     );
 
 
-    if(image == null)
+    if(image == null) {
       return;
+    }
 
 
 
@@ -268,8 +269,9 @@ class _AddStationScreenState
 
 
 
-    if(!formKey.currentState!.validate())
+    if(!formKey.currentState!.validate()) {
       return;
+    }
 
 
 
@@ -420,8 +422,9 @@ class _AddStationScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 
@@ -596,7 +599,7 @@ class _AddStationScreenState
 
             DropdownButtonFormField<GovernorateModel>(
 
-              value:
+              initialValue:
               selectedGovernorate,
 
 
@@ -652,7 +655,7 @@ class _AddStationScreenState
 
             DropdownButtonFormField<BranchModel>(
 
-              value:
+              initialValue:
               selectedBranch,
 
 

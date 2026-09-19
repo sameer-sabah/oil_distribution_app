@@ -43,9 +43,10 @@ class Station {
   final int whiteOil;
 
   final int lpg;
-
+  final Map<String, bool> supportedProducts;
 
   final String workingStatus;
+  final String crowdStatus;
 
   final String status;
 
@@ -121,8 +122,9 @@ class Station {
 
     required this.lpg,
 
-
+    Map<String, bool>? supportedProducts,
     required this.workingStatus,
+    this.crowdStatus = "هادئة",
 
     required this.status,
 
@@ -150,7 +152,14 @@ class Station {
 
     required this.updatedAt,
 
-  });
+  }) : supportedProducts = supportedProducts ?? {
+    "regular95": true,
+    "improved95": true,
+    "super95": true,
+    "diesel": true,
+    "whiteOil": true,
+    "lpg": true,
+  };
 
   factory Station.fromMap(String id,
       Map<String, dynamic> map){
@@ -232,10 +241,25 @@ class Station {
 
       lpg:
       map["lpg"] ?? 0,
-
+      supportedProducts:
+      map["supportedProducts"] != null
+          ? Map<String, bool>.from(
+        map["supportedProducts"],
+      )
+          : {
+        "regular95": true,
+        "improved95": true,
+        "super95": true,
+        "diesel": true,
+        "whiteOil": true,
+        "lpg": true,
+      },
 
       workingStatus:
       map["workingStatus"] ?? "مفتوحة",
+
+      crowdStatus:
+      map["crowdStatus"] ?? "هادئة",
 
 
       status:
@@ -332,8 +356,9 @@ class Station {
 
       "lpg": lpg,
 
-
+      "supportedProducts": supportedProducts,
       "workingStatus": workingStatus,
+      "crowdStatus": crowdStatus,
 
       "status": status,
 
@@ -352,17 +377,46 @@ class Station {
 
       "licenseIssuer": licenseIssuer,
 
-      "licenseIssueDate": licenseIssueDate,
-
-      "licenseExpiryDate": licenseExpiryDate,
-
-
       "createdAt": createdAt,
 
       "updatedAt": updatedAt,
 
 
     };
+  }
+
+  String get effectiveWorkingStatus {
+    final status = workingStatus.trim().toLowerCase();
+    if (status.contains('خاف') || status.contains('خفار') || workingHours.contains('24') || workingHours.contains('دائمي') || workingHours.contains('مستمر')) {
+      return workingStatus.isEmpty ? 'مفتوحة' : workingStatus;
+    }
+
+    try {
+      final parts = workingHours.split(RegExp(r'[-–toإلى]'));
+      if (parts.length >= 2) {
+        final startParts = parts[0].trim().split(':');
+        final endParts = parts[1].trim().split(':');
+
+        final startHour = int.tryParse(startParts[0]) ?? 8;
+        final startMinute = startParts.length > 1 ? (int.tryParse(startParts[1]) ?? 0) : 0;
+
+        final endHour = int.tryParse(endParts[0]) ?? 16;
+        final endMinute = endParts.length > 1 ? (int.tryParse(endParts[1]) ?? 0) : 0;
+
+        final now = DateTime.now();
+        final nowMinutes = now.hour * 60 + now.minute;
+        final startMinutes = startHour * 60 + startMinute;
+        final endMinutes = endHour * 60 + endMinute;
+
+        if (nowMinutes >= startMinutes && nowMinutes <= endMinutes) {
+          return 'مفتوحة';
+        } else {
+          return 'مغلقة';
+        }
+      }
+    } catch (_) {}
+
+    return workingStatus.isEmpty ? 'مفتوحة' : workingStatus;
   }
   Station copyWith({
 
@@ -391,9 +445,10 @@ class Station {
     int? diesel,
     int? whiteOil,
     int? lpg,
-
+    Map<String, bool>? supportedProducts,
 
     String? workingStatus,
+    String? crowdStatus,
     String? status,
 
 
@@ -499,10 +554,14 @@ class Station {
       lpg:
       lpg ?? this.lpg,
 
-
+      supportedProducts:
+      supportedProducts ?? this.supportedProducts,
 
       workingStatus:
       workingStatus ?? this.workingStatus,
+
+      crowdStatus:
+      crowdStatus ?? this.crowdStatus,
 
 
       status:

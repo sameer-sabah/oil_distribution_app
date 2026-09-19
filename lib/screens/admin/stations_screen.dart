@@ -70,8 +70,9 @@ class _StationsScreenState
 
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 

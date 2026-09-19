@@ -174,8 +174,9 @@ class AppUser {
 
       "username":username,
 
-      "password":password,
-
+      // SECURITY:
+      // هذا موديل قديم وغير مستخدم حالياً، لكن إذا استُخدم مستقبلاً
+      // فلا يجب أن يحفظ كلمة المرور داخل Realtime Database.
       "email":email,
 
       "phone":phone,

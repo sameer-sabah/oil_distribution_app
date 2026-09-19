@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/admin/admin_drawer.dart';
-import '../../models/station.dart';
 import 'stations/stations_management_screen.dart';
 import 'users_screen.dart';
 import '../pending_stations_screen.dart';

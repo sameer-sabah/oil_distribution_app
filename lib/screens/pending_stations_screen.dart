@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-
 import '../services/station_service.dart';
 import '../services/auth_service.dart';
 import '../core/constants/user_roles.dart';
-import 'pending_stations_screen.dart';
 class PendingStationsScreen extends StatefulWidget {
 
   const PendingStationsScreen({
@@ -59,86 +57,79 @@ class _PendingStationsScreenState
 
 
   Future<void> loadRequests() async {
-
-
-    final all =
-    await stationService
-        .getPendingStationRequests();
-    print("عدد كل الطلبات = ${all.length}");
-    print("فرع المدير الحالي = ${auth.currentUser?.branchId}");
-    print("PENDING COUNT = ${all.length}");
-    print("CURRENT USER = ${auth.currentUser?.username}");
-    print("ROLE = ${auth.currentUser?.role}");
-    print("BRANCH ID = ${auth.currentUser?.branchId}");
-
-    final user =
-        auth.currentUser;
-
-
-
-    if(user == null){
-
-      return;
-
+    if (mounted) {
+      setState(() {
+        loading = true;
+      });
     }
 
+    try {
+      final all =
+      await stationService.getPendingStationRequests();
 
+      debugPrint("عدد كل الطلبات = ${all.length}");
 
+      final user = auth.currentUser;
 
+      if (user == null) {
+        if (!mounted) return;
 
-    // مدير النظام يرى الجميع
+        setState(() {
+          requests = [];
+          loading = false;
+        });
 
-    if(user.role ==  UserRoles.admin){
+        return;
+      }
 
+      debugPrint(
+        "مدير الفرع: ${user.branchId}",
+      );
 
-      requests = all;
+      // مدير النظام يرى جميع الطلبات
+      if (user.role == UserRoles.admin) {
+        requests = all;
+      }
 
+      // مدير الفرع يرى طلبات فرعه فقط
+      else if (user.role == UserRoles.branchManager) {
+        requests = all.where((request) {
+          return request["branchId"]?.toString() ==
+              user.branchId.toString();
+        }).toList();
+      }
 
+      // أي دور آخر لا يرى الطلبات
+      else {
+        requests = [];
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+      });
+    } catch (e) {
+      debugPrint(
+        "خطأ في جلب طلبات تسجيل المحطات: $e",
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        requests = [];
+        loading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "تعذر تحميل طلبات تسجيل المحطات: $e",
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-
-
-    // مدير الفرع يرى فرعه فقط
-
-    else if(user.role == UserRoles.branchManager){
-
-      requests =
-          all.where((request){
-
-            return request["branchId"].toString() ==
-                user.branchId.toString();
-
-          }).toList();
-
-    }
-
-
-    else{
-
-
-      requests = [];
-
-
-    }
-
-
-
-
-
-    if(!mounted)
-      return;
-
-
-
-    setState(() {
-
-
-      loading = false;
-
-
-    });
-
-
-
   }
 
 
@@ -148,12 +139,15 @@ class _PendingStationsScreenState
 
 
 
-
   Future<void> approve(
-      Map<String,dynamic> request
+      Map<String, dynamic> request,
       ) async {
 
     try {
+
+      // ==========================================
+      // 1. اعتماد المحطة وإنشاء الحساب
+      // ==========================================
 
       final account =
       await stationService
@@ -161,102 +155,242 @@ class _PendingStationsScreenState
         request: request,
       );
 
+      if (!mounted) return;
 
-      await loadRequests();
+      // ==========================================
+      // 2. عرض بيانات الحساب + سؤال WhatsApp
+      // ==========================================
 
-
-      if(!mounted)
-        return;
-
-
-      showDialog(
-
+      final sendWhatsApp =
+      await showDialog<bool>(
         context: context,
-
-        builder:(context){
+        barrierDismissible: false,
+        builder: (dialogContext) {
 
           return AlertDialog(
 
-            title:
-            const Text(
-              "تم إنشاء حساب المحطة",
+            title: const Text(
+              "تم اعتماد المحطة",
               textAlign: TextAlign.center,
             ),
 
-            content:
-
-            Column(
-
+            content: Column(
               mainAxisSize:
               MainAxisSize.min,
 
               crossAxisAlignment:
               CrossAxisAlignment.start,
 
-              children:[
+              children: [
 
                 Text(
-                  "اسم المحطة:\n${account["stationName"]}",
+                  "اسم المحطة:\n"
+                      "${account["stationName"] ?? ""}",
+                  style:
+                  const TextStyle(
+                    fontWeight:
+                    FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
 
-                const SizedBox(height:15),
+                const SizedBox(
+                  height: 15,
+                ),
 
                 Text(
-                  "اسم المستخدم:\n${account["username"]}",
+                  "اسم المستخدم:\n"
+                      "${account["username"] ?? ""}",
+                  style:
+                  const TextStyle(
+                    fontSize: 16,
+                  ),
                 ),
 
-                const SizedBox(height:10),
+                const SizedBox(
+                  height: 10,
+                ),
 
                 Text(
-                  "كلمة المرور:\n${account["password"]}",
+                  "كلمة المرور:\n"
+                      "${account["password"] ?? ""}",
+                  style:
+                  const TextStyle(
+                    fontSize: 16,
+                  ),
                 ),
 
+                const SizedBox(
+                  height: 20,
+                ),
+
+                const Text(
+                  "هل تريد إرسال بيانات الدخول إلى صاحب المحطة عبر WhatsApp؟",
+                  style:
+                  TextStyle(
+                    fontWeight:
+                    FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
               ],
-
             ),
 
-            actions:[
+            actions: [
 
               TextButton(
+                onPressed: () {
 
-                onPressed:(){
+                  Navigator.pop(
+                    dialogContext,
+                    false,
+                  );
 
-                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "عدم الإرسال",
+                ),
+              ),
+
+              ElevatedButton.icon(
+
+                onPressed: () {
+
+                  Navigator.pop(
+                    dialogContext,
+                    true,
+                  );
 
                 },
 
-                child:
-                const Text("تم"),
+                icon: const Icon(
+                  Icons.send,
+                ),
 
+                label: const Text(
+                  "إرسال WhatsApp",
+                ),
               ),
-
             ],
-
           );
-
         },
-
       );
 
+      // ==========================================
+      // 3. إذا اختار إرسال WhatsApp
+      // ==========================================
 
-    } catch(e){
+      if (sendWhatsApp == true) {
+
+        try {
+
+          await stationService
+              .sendStationCredentialsWhatsApp(
+
+            stationId:
+            account["stationId"]
+                ?.toString() ??
+                "",
+
+            stationName:
+            account["stationName"]
+                ?.toString() ??
+                "",
+
+            phone:
+            account["phone"]
+                ?.toString() ??
+                request["phone"]
+                    ?.toString() ??
+                "",
+
+            username:
+            account["username"]
+                ?.toString() ??
+                "",
+
+            password:
+            account["password"]
+                ?.toString() ??
+                "",
+
+            branchId:
+            account["branchId"]
+                ?.toString() ??
+                request["branchId"]
+                    ?.toString() ??
+                "",
+          );
+
+          if (!mounted) return;
+
+          ScaffoldMessenger.of(context)
+              .showSnackBar(
+            const SnackBar(
+              content: Text(
+                "تم اعتماد المحطة وفتح WhatsApp برسالة جاهزة للإرسال",
+              ),
+              backgroundColor:
+              Colors.green,
+            ),
+          );
+
+        } catch (e) {
+
+          if (!mounted) return;
+
+          ScaffoldMessenger.of(context)
+              .showSnackBar(
+            SnackBar(
+              content: Text(
+                "تم اعتماد المحطة، لكن تعذر فتح WhatsApp: $e",
+              ),
+              backgroundColor:
+              Colors.orange,
+            ),
+          );
+        }
+
+      } else {
+
+        // ==========================================
+        // 4. اختار عدم الإرسال
+        // ==========================================
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+          const SnackBar(
+            content: Text(
+              "تم اعتماد المحطة بدون إرسال WhatsApp",
+            ),
+            backgroundColor:
+            Colors.green,
+          ),
+        );
+      }
+
+      // ==========================================
+      // 5. تحديث قائمة الطلبات
+      // ==========================================
+
+      await loadRequests();
+
+    } catch (e) {
+
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context)
           .showSnackBar(
-
         SnackBar(
           content:
           Text(e.toString()),
-
           backgroundColor:
           Colors.red,
-
         ),
-
       );
-
     }
-
   }
 
 

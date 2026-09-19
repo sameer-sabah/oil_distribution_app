@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/station.dart';
-import '../../../services/station_service.dart';
+import '../../services/station_service.dart';
 
 
 
@@ -159,8 +159,9 @@ class _MapScreenState
 
     await Geolocator.getCurrentPosition(
 
-      desiredAccuracy:
-      LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
 
     );
 
@@ -203,8 +204,9 @@ class _MapScreenState
   void setLoading(bool value){
 
 
-    if(!mounted)
+    if(!mounted) {
       return;
+    }
 
 
 
@@ -439,8 +441,9 @@ class _MapScreenState
 
 
 
-    if(currentPosition == null)
+    if(currentPosition == null) {
       return;
+    }
 
 
 
@@ -636,60 +639,15 @@ class _MapScreenState
 
 
               const SizedBox(height:10),
-
-
-
-
-
-              Text(
-
-                "بنزين عادي: ${station.regular95} لتر",
-
-              ),
-
-
-
-              Text(
-
-                "بنزين محسن: ${station.improved95} لتر",
-
-              ),
-
-
-
-              Text(
-
-                "بنزين سوبر: ${station.super95} لتر",
-
-              ),
-
-
-
-              Text(
-
-                "ديزل: ${station.diesel} لتر",
-
-              ),
-
-
-
-              Text(
-
-                "نفط أبيض: ${station.whiteOil} لتر",
-
-              ),
-
-
-
-              Text(
-
-                "غاز: ${station.lpg} لتر",
-
-              ),
-
-
-
-
+              const Text("المنتوجات المتوفرة في المحطة:", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              if (station.supportedProducts["regular95"] == true) const Text("• بنزين عادي"),
+              if (station.supportedProducts["improved95"] == true) const Text("• بنزين محسن"),
+              if (station.supportedProducts["super95"] == true) const Text("• بنزين سوبر"),
+              if (station.supportedProducts["diesel"] == true) const Text("• ديزل (زيت الغاز)"),
+              if (station.supportedProducts["whiteOil"] == true) const Text("• نفط أبيض"),
+              if (station.supportedProducts["lpg"] == true) const Text("• غاز سائل"),
+              const SizedBox(height:20),
 
 
               const SizedBox(height:20),
@@ -1075,9 +1033,9 @@ class _MapScreenState
 
 
           if(mapController == null ||
-              currentPosition == null)
-
+              currentPosition == null) {
             return;
+          }
 
 
 

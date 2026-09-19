@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/constants/user_roles.dart';
 import '../../models/request_model.dart';
 import '../../services/auth_service.dart';
 import '../../services/request_service.dart';
@@ -248,7 +247,7 @@ flex: 2,
 child:
 DropdownButtonFormField<String>(
 
-value: filter,
+initialValue: filter,
 
 decoration: InputDecoration(
 border: OutlineInputBorder(
@@ -356,7 +355,7 @@ FontWeight.bold,
 Chip(
 backgroundColor:
 _statusColor(request.status)
-.withOpacity(.15),
+.withValues(alpha: .15),
 
 label: Text(
 _statusText(request.status),
@@ -646,7 +645,7 @@ auth.currentUser!.fullName,
 items: approvedItems,
 );
 
-if (mounted) {
+if (!context.mounted) return;
 Navigator.pop(context);
 
 ScaffoldMessenger.of(context)
@@ -658,7 +657,7 @@ content: Text(
 ),
 );
 }
-},
+
 ),
 ],
 );

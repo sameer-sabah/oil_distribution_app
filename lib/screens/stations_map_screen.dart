@@ -155,8 +155,9 @@ class _StationsMapScreenState
     currentPosition =
     await Geolocator.getCurrentPosition(
 
-      desiredAccuracy:
-      LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
 
     );
 
@@ -222,6 +223,18 @@ class _StationsMapScreenState
         icon =
             BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueRed,
+            );
+
+
+      }
+
+
+      else if(station.workingStatus.contains("خاف") || station.workingStatus.contains("خفار") || station.workingStatus == "duty"){
+
+
+        icon =
+            BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueViolet,
             );
 
 

@@ -54,8 +54,15 @@ class _PrivateStationsScreenState
       );
 
       final privateStations = data.where((station) {
-        return station.stationType.trim() == "أهلية" ||
-            station.stationType.trim() == "private";
+        final type =
+        station.stationType
+            .trim()
+            .toLowerCase();
+
+        return type == "أهلية" ||
+            type == "اهلية" ||
+            type == "خاصة" ||
+            type == "private";
       }).toList();
 
       if (!mounted) return;

@@ -13,7 +13,7 @@ class StationInfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.15),
+            color: Colors.grey.withValues(alpha: .15),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

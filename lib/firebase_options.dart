@@ -61,11 +61,11 @@ class DefaultFirebaseOptions {
   );
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBVJ6aeNk07u2LPLb5lr2AvYvkp-alt5cM',
-    appId: '1:20625081403:ios:7fffb9072709386551881e',
+    appId: '1:20625081403:ios:1c892650f1ffc61851881e',
     messagingSenderId: '20625081403',
     projectId: 'oil-distribution-app-8b767',
     databaseURL: 'https://oil-distribution-app-8b767-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'oil-distribution-app-8b767.firebasestorage.app',
-    iosBundleId: 'com.example.oilDistributionApp',
+    iosBundleId: 'com.samir.nafithat',
   );
 }

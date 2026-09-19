@@ -4,7 +4,7 @@ import '../../models/station.dart';
 import '../../services/auth_service.dart';
 import '../../services/station_service.dart';
 import '../../services/notification_service.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 class QuantityTrackingScreen extends StatefulWidget {
 
@@ -36,10 +36,13 @@ class _QuantityTrackingScreenState
 
   Station? selectedStation;
 
+  int stationDropdownRevision = 0;
+
   bool loading = true;
-  String selectedProduct = "بنزين عادي";
+  String selectedProduct = "جميع المنتوجات";
 
   final List<String> products = [
+    "جميع المنتوجات",
     "بنزين عادي",
     "بنزين محسن",
     "بنزين سوبر",
@@ -59,10 +62,11 @@ class _QuantityTrackingScreenState
 
     if (user == null) return;
 
-    final loadedStations =
-    await stationService.getBranchStations(
-      user.branchId,
-    );
+    final loadedStations = auth.isAdmin
+        ? await stationService.getStations()
+        : await stationService.getBranchStations(
+            user.branchId,
+          );
 
     // إزالة المحطات المكررة حسب ID
     final uniqueStations = <String, Station>{};
@@ -71,18 +75,34 @@ class _QuantityTrackingScreenState
       uniqueStations[station.id] = station;
     }
 
+    final List<Station> nextStations =
+    uniqueStations.values.toList()
+      ..sort(
+            (a, b) => a.name.compareTo(b.name),
+      );
+
+    // لا نحتفظ بكائن Station قديم بعد تحديث القائمة.
+    // نربط الاختيار بعنصر القائمة الجديد حسب ID.
+    final String? selectedStationId =
+        selectedStation?.id;
+
+    Station? nextSelectedStation;
+
+    if (selectedStationId != null) {
+      for (final station in nextStations) {
+        if (station.id == selectedStationId) {
+          nextSelectedStation = station;
+          break;
+        }
+      }
+    }
+
     if (!mounted) return;
 
     setState(() {
-      stations = uniqueStations.values.toList();
-
-      // التأكد أن المحطة المختارة ما زالت موجودة
-      if (selectedStation != null &&
-          !stations.any(
-                (station) => station.id == selectedStation!.id,
-          )) {
-        selectedStation = null;
-      }
+      stations = nextStations;
+      selectedStation = nextSelectedStation;
+      stationDropdownRevision++;
 
       loading = false;
     });
@@ -161,10 +181,16 @@ class _QuantityTrackingScreenState
       );
     }
   }
-  int quantity(Station station){
-
-
-    switch(selectedProduct){
+  int quantity(Station station) {
+    if (selectedProduct == "جميع المنتوجات") {
+      return station.regular95 +
+          station.improved95 +
+          station.super95 +
+          station.diesel +
+          station.whiteOil +
+          station.lpg;
+    }
+    switch (selectedProduct) {
 
 
       case "بنزين عادي":
@@ -206,12 +232,14 @@ class _QuantityTrackingScreenState
 
   Color statusColor(int value){
 
-    if(value <= 0)
+    if(value <= 0) {
       return Colors.red;
+    }
 
 
-    if(value < 5000)
+    if(value < 5000) {
       return Colors.orange;
+    }
 
 
     return Colors.green;
@@ -225,12 +253,14 @@ class _QuantityTrackingScreenState
 
   String statusText(int value){
 
-    if(value <= 0)
+    if(value <= 0) {
       return "نفذ";
+    }
 
 
-    if(value < 5000)
+    if(value < 5000) {
       return "قليل";
+    }
 
 
     return "متوفر";
@@ -429,7 +459,12 @@ class _QuantityTrackingScreenState
             DropdownButtonFormField<Station>(
 
 
-              value:selectedStation,
+              key: ValueKey(
+                'station-dropdown-$stationDropdownRevision',
+              ),
+
+
+              initialValue:selectedStation,
 
 
               decoration:
@@ -510,7 +545,7 @@ class _QuantityTrackingScreenState
             DropdownButtonFormField<String>(
 
 
-              value:selectedProduct,
+              initialValue:selectedProduct,
 
 
               decoration:
@@ -697,190 +732,228 @@ class _QuantityTrackingScreenState
 
 
 
-            DataTable(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                dataRowMaxHeight: double.infinity,
+                dataRowMinHeight: 65,
+                columnSpacing: 18,
+                horizontalMargin: 10,
+                columns: [
+                  const DataColumn(
+                    label: Text("المحطة"),
+                  ),
+                  DataColumn(
+                    label: Text(selectedProduct),
+                  ),
+                  const DataColumn(
+                    label: Text("الحالة"),
+                  ),
+                ],
+                rows: stations
+                    .where((s) =>
+                        selectedStation == null ||
+                        selectedStation!.id == s.id)
+                    .map((station) {
+                  final qty = quantity(station);
 
-
-              columns:[
-
-
-                const DataColumn(
-                    label:Text("المحطة")
-                ),
-
-
-                DataColumn(
-                    label:
-                    Text(selectedProduct)
-                ),
-
-
-                const DataColumn(
-                    label:Text("الحالة")
-                ),
-
-
-
-              ],
-
-
-
-              rows:
-
-              stations
-
-                  .where((s)=>
-
-              selectedStation==null ||
-
-                  selectedStation!.id==s.id
-
-              )
-
-
-                  .map((station){
-
-
-
-                final qty =
-                quantity(station);
-
-
-
-                return DataRow(
-
-                    cells:[
-
-
-
-                      DataCell(
-                          Text(
-                              station.name
-                          )
-                      ),
-
-
-
-                      DataCell(
-                          Text(
-                              "$qty"
-                          )
-                      ),
-
-
-
-                      DataCell(
-
-                        Text(
-
-                          statusText(qty),
-
-                          style:
-
-                          TextStyle(
-
-                            color:
-                            statusColor(qty),
-
-                            fontWeight:
-                            FontWeight.bold,
-
+                  if (selectedProduct == "جميع المنتوجات") {
+                    return DataRow(
+                      cells: [
+                        DataCell(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  station.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  "عادي: ${station.regular95} | محسن: ${station.improved95} | سوبر: ${station.super95}\n"
+                                  "كاز: ${station.diesel} | نفط: ${station.whiteOil} | غاز: ${station.lpg}",
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-
                         ),
+                        DataCell(
+                          Text(
+                            "$qty لتر",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          Text(
+                            statusText(qty),
+                            style: TextStyle(
+                              color: statusColor(qty),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
 
+                  return DataRow(
+                    cells: [
+                      DataCell(
+                        Text(station.name),
                       ),
+                      DataCell(
+                        Text("$qty لتر"),
+                      ),
+                      DataCell(
+                        Text(
+                          statusText(qty),
+                          style: TextStyle(
+                            color: statusColor(qty),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 20),
 
 
-                    ]
 
+
+
+            // ========================================
+// أزرار التحكم - جنب بعض
+// ========================================
+
+            const SizedBox(height: 15),
+
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final double labelFontSize =
+                constraints.maxWidth < 340
+                    ? 12
+                    : 14;
+
+                Widget mobileButton({
+                  required IconData icon,
+                  required String label,
+                  required VoidCallback onPressed,
+                }) {
+                  return SizedBox(
+                    height: 70,
+                    child: ElevatedButton(
+                      onPressed: onPressed,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 70),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 2,
+                          vertical: 8,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment:
+                        MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            icon,
+                            size: 21,
+                          ),
+                          const SizedBox(height: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: labelFontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: mobileButton(
+                        icon: Icons.refresh,
+                        label: "تحديث",
+                        onPressed: loadStations,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: mobileButton(
+                        icon: Icons.notifications_active,
+                        label: "إشعار",
+                        onPressed:
+                        sendQuantityNotification,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: mobileButton(
+                        icon: Icons.map,
+                        label: "الخريطة",
+                        onPressed: () async {
+                          if (selectedStation == null) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "يرجى اختيار محطة أولاً",
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          final station =
+                          selectedStation!;
+
+                          final url = Uri.parse(
+                            "https://www.google.com/maps/search/?api=1&query=${station.latitude},${station.longitude}",
+                          );
+
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode
+                                .externalApplication,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 );
-
-
-              }).toList(),
-
-
-
-            ),
-
-
-
-
-
-
-            const SizedBox(height:20),
-
-
-
-
-
-            ElevatedButton.icon(
-
-              icon:
-              const Icon(Icons.refresh),
-
-
-              label:
-              const Text(
-                  "تحديث الكميات"
-              ),
-
-
-              onPressed:
-              loadStations,
-
-
-            ),
-
-
-
-
-            ElevatedButton.icon(
-              icon: const Icon(
-                Icons.notifications_active,
-              ),
-              label: const Text(
-                "إرسال إشعار للمحطة",
-              ),
-              onPressed: sendQuantityNotification,
-            ),
-
-
-
-
-            ElevatedButton.icon(
-
-              icon:
-              const Icon(
-                  Icons.map
-              ),
-
-
-              label:
-              const Text(
-                  "فتح الموقع على الخريطة"
-              ),
-
-
-              onPressed:(){
-
-
               },
-
             ),
 
-
-
+            const SizedBox(height: 20),
           ],
-
-
         ),
-
-
       ),
-
-
     );
-
   }
 
 

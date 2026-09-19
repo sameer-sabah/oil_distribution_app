@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../models/station.dart';
 import '../models/governorate_model.dart';
 import '../models/branch_model.dart';
 
@@ -142,6 +141,11 @@ class _RegisterStationScreenState
     if (selected != null) {
       setState(() {
         openTime = selected;
+        // حساب وقت الإغلاق تلقائياً بعد 12 ساعة مباشر بدون الحاجة لاختياره يدوياً
+        closeTime = TimeOfDay(
+          hour: (selected.hour + 12) % 24,
+          minute: selected.minute,
+        );
       });
     }
   }
@@ -285,8 +289,9 @@ class _RegisterStationScreenState
 
 
 
-    if(image==null)
+    if(image==null) {
       return;
+    }
 
 
 
@@ -326,8 +331,9 @@ class _RegisterStationScreenState
   Future<void> save() async{
 
 
-    if(!formKey.currentState!.validate())
+    if(!formKey.currentState!.validate()) {
       return;
+    }
 
 
 
@@ -385,35 +391,29 @@ class _RegisterStationScreenState
 
 
 
-      if(managerImage!=null){
+      // رفع الصورتين بالتوازي بدلاً من انتظار الأولى ثم الثانية.
+      final uploadResults =
+      await Future.wait<String>([
+        if (managerImage != null)
+          storage.uploadManagerPhoto(
+            managerImage!,
+          )
+        else
+          Future.value(""),
 
-        managerPhoto =
-        await storage.uploadManagerPhoto(
-            managerImage!
-        );
+        if (stationImage != null)
+          storage.uploadStationPhoto(
+            stationImage!,
+          )
+        else
+          Future.value(""),
+      ]);
 
-      }
+      managerPhoto =
+      uploadResults[0];
 
-
-
-      if(stationImage!=null){
-
-        stationPhoto =
-        await storage.uploadStationPhoto(
-            stationImage!
-        );
-
-      }
-
-
-
-
-
-
-      final id =
-      DateTime.now()
-          .millisecondsSinceEpoch
-          .toString();
+      stationPhoto =
+      uploadResults[1];
 
 
 
@@ -421,13 +421,7 @@ class _RegisterStationScreenState
 
 
       final request = {
-
-
-        "id":id,
-
-
-        "name":
-        name.text.trim(),
+        "name": name.text.trim(),
 
         "stationType": stationType,
 
@@ -513,49 +507,61 @@ class _RegisterStationScreenState
 
 
 
-      final exists =
-      await stationService.stationExistsByName(
-          name.text.trim()
+      // ============================================================
+// فحص التكرار قبل إرسال طلب تسجيل المحطة
+// ============================================================
+
+      final duplicates =
+      await stationService.checkRegistrationDuplicates(
+        stationName: name.text.trim(),
+        managerName: managerName.text.trim(),
+        phone: phone.text.trim(),
       );
 
+// ============================================================
+// إذا توجد بيانات مكررة
+// ============================================================
 
-      if(exists){
+      if (duplicates.isNotEmpty) {
+        if (!mounted) {
+          return;
+        }
 
-        ScaffoldMessenger.of(context)
-            .showSnackBar(
+        final duplicateText =
+        duplicates.map((item) => "• $item").join("\n");
 
-          const SnackBar(
-
-            content:
-            Text(
-              "هذه المحطة مضافة مسبقاً أو يوجد طلب تسجيل لها",
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red.shade700,
+            duration: const Duration(seconds: 6),
+            content: Text(
+              "⚠️ لا يمكن إرسال الطلب\n\n"
+                  "تم العثور على بيانات مكررة:\n"
+                  "$duplicateText\n\n"
+                  "يرجى تعديل البيانات ثم المحاولة مرة أخرى.",
+              textDirection: TextDirection.rtl,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-
-            backgroundColor:
-            Colors.red,
-
-            duration:
-            Duration(seconds:3),
           ),
-
         );
 
-
         return;
-
       }
 
-      await stationService.pendingRef
-          .child(id)
-          .set(request);
+      await stationService.addPendingStation(request);
 
 
 
 
 
 
-      if(!mounted)
+      if(!mounted) {
         return;
+      }
 
 
 
@@ -732,7 +738,7 @@ class _RegisterStationScreenState
 
             DropdownButtonFormField<GovernorateModel>(
 
-              value: selectedGovernorate,
+              initialValue: selectedGovernorate,
 
               decoration:
               const InputDecoration(
@@ -788,7 +794,7 @@ class _RegisterStationScreenState
             const SizedBox(height:15),
             DropdownButtonFormField<BranchModel>(
 
-              value:selectedBranch,
+              initialValue:selectedBranch,
 
 
               decoration:
@@ -849,7 +855,7 @@ class _RegisterStationScreenState
 
             DropdownButtonFormField<String>(
 
-              value: stationType,
+              initialValue: stationType,
 
 
               decoration: const InputDecoration(
@@ -879,7 +885,7 @@ class _RegisterStationScreenState
 
                 DropdownMenuItem(
 
-                    value: "أهلية",
+                  value: "أهلية",
 
                   child:
                   Text("أهلية"),
@@ -1028,7 +1034,7 @@ class _RegisterStationScreenState
             const SizedBox(height: 8),
 
             DropdownButtonFormField<String>(
-              value: workSystem,
+              initialValue: workSystem,
               decoration: const InputDecoration(
                 labelText: "نظام ساعات العمل",
                 border: OutlineInputBorder(),

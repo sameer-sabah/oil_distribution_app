@@ -80,7 +80,7 @@ class SupplyCard extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             Chip(
-              backgroundColor: color.withOpacity(.15),
+              backgroundColor: color.withValues(alpha: .15),
               label: Text(
                 status,
                 style: TextStyle(

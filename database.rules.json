@@ -1,0 +1,214 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "branches": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$branchId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && root.child('users').child(auth.uid).child('branchId').val() == $branchId))"
+      }
+    },
+    "governorates": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'"
+    },
+    "paymentMethods": {
+      ".read": true,
+      ".write": true
+    },
+    "walletTopUpRequests": {
+      ".read": true,
+      ".write": true
+    },
+    "advertiserAccounts": {
+      ".read": true,
+      ".write": true
+    },
+    "stations": {
+      ".read": true,
+      "$stationId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && ((!data.exists() && newData.exists() && newData.child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val()) || (data.exists() && data.child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val() && (!newData.exists() || newData.child('branchId').val() == data.child('branchId').val())))) || ((root.child('users').child(auth.uid).child('role').val() == 'stationManager' || root.child('users').child(auth.uid).child('role').val() == 'station_manager' || root.child('users').child(auth.uid).child('role').val() == 'station') && root.child('users').child(auth.uid).child('stationId').val() == $stationId))",
+        ".validate": "newData.hasChildren(['active', 'approved', 'branchId']) && newData.child('active').isBoolean() && newData.child('approved').isBoolean() && newData.child('branchId').isString()"
+      }
+    },
+    "pendingStations": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager')",
+      "$stationId": {
+        ".write": true
+      }
+    },
+    "users": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || ((root.child('users').child(auth.uid).child('role').val() == 'branchManager' || (root.child('users').child(auth.uid).child('role').val() == 'stationManager' || root.child('users').child(auth.uid).child('role').val() == 'station_manager' || root.child('users').child(auth.uid).child('role').val() == 'station')) && query.orderByChild == 'branchId' && query.equalTo == root.child('users').child(auth.uid).child('branchId').val()))",
+      ".indexOn": [
+        "role",
+        "branchId",
+        "stationId"
+      ],
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || root.child('users').child(auth.uid).child('role').val() == 'admin' || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && root.child('users').child($uid).child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val()) || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && root.child('users').child($uid).child('role').val() == 'admin') || ((root.child('users').child(auth.uid).child('role').val() == 'stationManager' || root.child('users').child(auth.uid).child('role').val() == 'station_manager' || root.child('users').child(auth.uid).child('role').val() == 'station') && root.child('users').child($uid).child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val()))",
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || auth.uid == $uid || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && !data.exists() && newData.child('role').val() == 'stationManager' && newData.child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val()))",
+        ".validate": "newData.hasChildren(['fullName', 'username', 'email', 'role', 'active'])",
+        "role": {
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && !data.parent().exists() && newData.val() == 'stationManager'))"
+        },
+        "branchId": {
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || auth.uid == $uid || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && !data.parent().exists() && newData.val() == root.child('users').child(auth.uid).child('branchId').val()))"
+        },
+        "stationId": {
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || auth.uid == $uid || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && !data.parent().exists()))"
+        },
+        "active": {
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || auth.uid == $uid || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && !data.parent().exists()))"
+        },
+        "password": {
+          ".write": false
+        }
+      }
+    },
+    "deviceTokens": {
+      ".read": false,
+      "citizens": {
+        ".read": "auth != null",
+        "$deviceId": {
+          ".write": "auth != null"
+        }
+      },
+      "$type": {
+        "$uid": {
+          ".read": "auth != null && (auth.uid == $uid || root.child('users').child(auth.uid).child('role').val() == 'admin')",
+          ".write": "auth != null && (auth.uid == $uid || root.child('users').child(auth.uid).child('role').val() == 'admin')"
+        }
+      }
+    },
+    "whatsappMessages": {
+      ".read": false,
+      "$messageId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && newData.child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val()))",
+        ".validate": "newData.hasChildren(['id', 'phone', 'message', 'type', 'stationId', 'stationName', 'username', 'createdAt', 'sent']) && newData.child('id').isString() && newData.child('phone').isString() && newData.child('message').isString() && newData.child('type').isString() && newData.child('stationId').isString() && newData.child('stationName').isString() && newData.child('username').isString() && newData.child('createdAt').isString() && newData.child('sent').isBoolean()"
+      }
+    },
+    "appInstallations": {
+      ".read": "auth != null",
+      "$installationId": {
+        ".write": "auth != null && auth.uid == $installationId",
+        ".validate": "newData.hasChildren(['id', 'createdAt', 'lastActiveAt']) && newData.child('id').val() == $installationId"
+      }
+    },
+    "internalMessages": {
+      ".indexOn": [
+        "receiverUid",
+        "senderUid",
+        "branchId",
+        "stationId"
+      ],
+      ".read": "auth != null && query.orderByChild == 'receiverUid' && query.equalTo == auth.uid",
+      "$messageId": {
+        ".read": "auth != null && (data.child('receiverUid').val() == auth.uid || data.child('senderUid').val() == auth.uid)",
+        ".write": "auth != null && !data.exists() && newData.exists() && newData.child('senderUid').val() == auth.uid && ((root.child('users').child(auth.uid).child('role').val() == 'admin' && root.child('users').child(newData.child('receiverUid').val()).child('role').val() == 'branchManager') || (root.child('users').child(auth.uid).child('role').val() == 'branchManager' && (root.child('users').child(newData.child('receiverUid').val()).child('role').val() == 'admin' || (root.child('users').child(newData.child('receiverUid').val()).child('role').val() == 'stationManager' && root.child('users').child(newData.child('receiverUid').val()).child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val()))) || ((root.child('users').child(auth.uid).child('role').val() == 'stationManager' || root.child('users').child(auth.uid).child('role').val() == 'station_manager' || root.child('users').child(auth.uid).child('role').val() == 'station') && root.child('users').child(newData.child('receiverUid').val()).child('role').val() == 'branchManager' && root.child('users').child(newData.child('receiverUid').val()).child('branchId').val() == root.child('users').child(auth.uid).child('branchId').val()))",
+        ".validate": "newData.hasChildren(['id', 'senderUid', 'senderName', 'senderRole', 'receiverUid', 'receiverName', 'receiverRole', 'branchId', 'stationId', 'subject', 'message', 'read', 'createdAt']) && newData.child('id').isString() && newData.child('senderUid').isString() && newData.child('senderName').isString() && newData.child('senderRole').isString() && newData.child('receiverUid').isString() && newData.child('receiverName').isString() && newData.child('receiverRole').isString() && newData.child('branchId').isString() && newData.child('stationId').isString() && newData.child('subject').isString() && newData.child('message').isString() && newData.child('read').isBoolean() && newData.child('createdAt').isString()",
+        "read": {
+          ".write": "auth != null && data.parent().child('receiverUid').val() == auth.uid",
+          ".validate": "newData.isBoolean()"
+        }
+      }
+    },
+    "commercialAds": {
+      ".read": "auth != null",
+      "$adId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (!data.exists() && newData.child('ownerUid').val() == auth.uid) || (data.exists() && data.child('ownerUid').val() == auth.uid && newData.child('ownerUid').val() == data.child('ownerUid').val()))",
+        "views": {
+          ".write": "auth != null"
+        },
+        "clicks": {
+          ".write": "auth != null"
+        },
+        "calls": {
+          ".write": "auth != null"
+        },
+        "whatsappClicks": {
+          ".write": "auth != null"
+        },
+        "mapClicks": {
+          ".write": "auth != null"
+        }
+      }
+    },
+    "commercialServices": {
+      ".read": "auth != null",
+      "$serviceId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (!data.exists() && newData.child('ownerUid').val() == auth.uid) || (data.exists() && data.child('ownerUid').val() == auth.uid && newData.child('ownerUid').val() == data.child('ownerUid').val()))",
+        "views": {
+          ".write": "auth != null"
+        },
+        "clicks": {
+          ".write": "auth != null"
+        },
+        "calls": {
+          ".write": "auth != null"
+        },
+        "whatsappClicks": {
+          ".write": "auth != null"
+        },
+        "mapClicks": {
+          ".write": "auth != null"
+        }
+      }
+    },
+    "commercialRequests": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$requestId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (!data.exists() && newData.child('ownerUid').val() == auth.uid))"
+      }
+    },
+    "commercialPayments": {
+      ".read": "auth != null",
+      "$paymentId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (!data.exists() && newData.child('ownerUid').val() == auth.uid))"
+      }
+    },
+    "contactMessages": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$messageId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || (!data.exists() && newData.child('userId').val() == auth.uid))"
+      }
+    },
+    "appRatings": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$ratingId": {
+        ".write": "auth != null && !data.exists() && newData.child('userId').val() == auth.uid"
+      }
+    },
+    "passwordRequests": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager')",
+      "$requestId": {
+        ".write": "auth != null && ((!data.exists() && newData.child('status').val() == 'pending') || root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager')"
+      }
+    },
+    "passwordResetRequests": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager')",
+      ".write": false
+    },
+    "requests": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager' || (root.child('users').child(auth.uid).child('role').val() == 'stationManager' || root.child('users').child(auth.uid).child('role').val() == 'station_manager' || root.child('users').child(auth.uid).child('role').val() == 'station') || (root.child('users').child(auth.uid).child('role').val() == 'distributionManager' || root.child('users').child(auth.uid).child('role').val() == 'distribution_manager'))",
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager' || (root.child('users').child(auth.uid).child('role').val() == 'stationManager' || root.child('users').child(auth.uid).child('role').val() == 'station_manager' || root.child('users').child(auth.uid).child('role').val() == 'station') || (root.child('users').child(auth.uid).child('role').val() == 'distributionManager' || root.child('users').child(auth.uid).child('role').val() == 'distribution_manager'))"
+    },
+    "stationRequests": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager')",
+      "$requestId": {
+        ".write": "auth != null && ((!data.exists() && newData.exists()) || root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager')"
+      }
+    },
+    "stock_history": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager' || (root.child('users').child(auth.uid).child('role').val() == 'stationManager' || root.child('users').child(auth.uid).child('role').val() == 'station_manager' || root.child('users').child(auth.uid).child('role').val() == 'station') || (root.child('users').child(auth.uid).child('role').val() == 'distributionManager' || root.child('users').child(auth.uid).child('role').val() == 'distribution_manager'))",
+      ".write": false
+    },
+    "notifications": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "userId"
+      ],
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'branchManager' || (root.child('users').child(auth.uid).child('role').val() == 'distributionManager' || root.child('users').child(auth.uid).child('role').val() == 'distribution_manager'))"
+    }
+  }
+}
