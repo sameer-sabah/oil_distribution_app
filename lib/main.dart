@@ -352,36 +352,58 @@ class _ForceUpdateGateState extends State<ForceUpdateGate> {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options:
-    DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options:
+      DefaultFirebaseOptions.currentPlatform,
+    );
 
-  FirebaseMessaging.onBackgroundMessage(
-    PushNotificationService
-        .firebaseMessagingBackgroundHandler,
-  );
+    FirebaseMessaging.onBackgroundMessage(
+      PushNotificationService
+          .firebaseMessagingBackgroundHandler,
+    );
+  } catch (e) {
+    debugPrint("Firebase init error: $e");
+  }
 
-  await registerAppInstallation();
-  await LanguageController.instance.load();
-  await PushNotificationService
-      .instance
-      .initialize(
-    isCitizen: false,
-  );
+  try {
+    await registerAppInstallation();
+  } catch (e) {
+    debugPrint("App install error: $e");
+  }
+  
+  try {
+    await LanguageController.instance.load();
+  } catch (e) {
+    debugPrint("Language error: $e");
+  }
+  
+  try {
+    await PushNotificationService
+        .instance
+        .initialize(
+      isCitizen: false,
+    ).timeout(const Duration(seconds: 5));
+  } catch (e) {
+    debugPrint("Push notification init error: $e");
+  }
 
   runApp(
     const MyApp(),
   );
 
   Future.microtask(() async {
-    await GovernorateService
-        .instance
-        .createDefaultGovernorates();
+    try {
+      await GovernorateService
+          .instance
+          .createDefaultGovernorates();
 
-    await BranchService
-        .instance
-        .createDefaultBranches();
+      await BranchService
+          .instance
+          .createDefaultBranches();
+    } catch (e) {
+      debugPrint("Services init error: $e");
+    }
   });
 }
 

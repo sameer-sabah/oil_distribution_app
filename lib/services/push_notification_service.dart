@@ -81,9 +81,17 @@ class PushNotificationService {
       '@mipmap/ic_launcher',
     );
 
+    const darwinSettings =
+    DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+
     const initializationSettings =
     InitializationSettings(
       android: androidSettings,
+      iOS: darwinSettings,
     );
 
     await localNotifications.initialize(

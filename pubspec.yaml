@@ -2,7 +2,7 @@ name: oil_distribution_app
 description: "نافذة المنتوج النفطي"
 publish_to: "none"
 
-version: 1.0.4+5
+version: 2.0.3+11
 
 environment:
   sdk: ">=3.12.0 <4.0.0"
