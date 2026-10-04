@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../models/wallet_model.dart';
 import '../../services/wallet_service.dart';
 import '../../services/commercial_service.dart';
-import '../commercial_conversation_screen.dart';
 
 class UserWalletsScreen extends StatefulWidget {
   const UserWalletsScreen({super.key});

@@ -30,7 +30,6 @@ class _CommercialPaymentScreenState
   final note = TextEditingController();
 
   bool saving = false;
-  bool _settingsLoading = true;
 
   bool _accountLoading = true;
   AdvertiserAccount? _advertiserAccount;
@@ -54,19 +53,7 @@ class _CommercialPaymentScreenState
       await CommercialPaymentSettingsService
           .instance
           .getSettings();
-
-      if (!mounted) return;
-
-      setState(() {
-        _settingsLoading = false;
-      });
-    } catch (_) {
-      if (!mounted) return;
-
-      setState(() {
-        _settingsLoading = false;
-      });
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadAdvertiserAccount() async {

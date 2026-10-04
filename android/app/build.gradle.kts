@@ -19,6 +19,7 @@ if (keystorePropertiesFile.exists()) {
 
 plugins {
     id("com.android.application")
+    id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
@@ -116,6 +117,8 @@ dependencies {
     coreLibraryDesugaring(
         "com.android.tools:desugar_jdk_libs:2.1.4"
     )
+    implementation("androidx.annotation:annotation:1.9.1")
+    compileOnly("io.flutter:flutter_embedding_debug:1.0.0-83675ed27633283e7fc296c8bca22e841224c096")
 }
 
 // =========================================================

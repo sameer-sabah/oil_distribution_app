@@ -310,7 +310,7 @@ class __TopUpBottomSheetState extends State<_TopUpBottomSheet> {
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<PaymentMethod>(
-                    value: _selectedMethod,
+                    initialValue: _selectedMethod,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

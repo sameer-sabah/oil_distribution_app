@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
+
+  Future<void> _launchURL(String urlString) async {
+    final Uri uri = Uri.parse(urlString);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +136,94 @@ class AboutScreen extends StatelessWidget {
                           'يوفر التطبيق للمواطن معرفة المحطات وتوفر المنتجات ومواقعها، مع إمكانية عرض خدمات وإعلانات تجارية مدفوعة بعد مراجعتها واعتمادها من الإدارة.',
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 15, height: 1.6, color: Color(0xFF0F172A), fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // كرت التنويه والجهة الحكومية ورابط المصدر الرسمي
+                      _parchmentCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(colors: [Color(0xFFD4AF37), Color(0xFF8A6D1C)]),
+                                  ),
+                                  child: const Icon(Icons.account_balance_rounded, color: Colors.white, size: 20),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'إخلاء مسؤولية ومصدر البيانات',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 16,
+                                    color: Color(0xFF0F172A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'هذا التطبيق هو تطبيق مستقل قام بتطويره المهندس سمير الجوعاني لخدمة وتسهيل معرفة مواقع المحطات وتوفر المنتجات. التطبيق لا يمثل أي جهة حكومية أو رسمية، وليس له أي ارتباط رسمي بوزارة النفط أو شركة توزيع المنتجات النفطية.',
+                              style: TextStyle(fontSize: 13, height: 1.6, color: Color(0xFF334155), fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'مصادر البيانات والمعلومات الرسمية:',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                            ),
+                            const SizedBox(height: 6),
+                            InkWell(
+                              onTap: () => _launchURL('https://opdc.oil.gov.iq'),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 4),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.link_rounded, size: 18, color: Color(0xFF8A6D1C)),
+                                    SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        'شركة توزيع المنتجات النفطية (opdc.oil.gov.iq)',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Color(0xFF1D4ED8),
+                                          decoration: TextDecoration.underline,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => _launchURL('https://oil.gov.iq'),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 4),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.link_rounded, size: 18, color: Color(0xFF8A6D1C)),
+                                    SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        'موقع وزارة النفط العراقية (oil.gov.iq)',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Color(0xFF1D4ED8),
+                                          decoration: TextDecoration.underline,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 14),

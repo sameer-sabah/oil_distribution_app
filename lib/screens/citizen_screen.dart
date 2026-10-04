@@ -10,7 +10,6 @@ import '../services/station_service.dart';
 import '../services/navigation_service.dart';
 import '../services/auth_service.dart';
 import 'notifications_screen.dart';
-import 'all_stations_fuel_report_screen.dart';
 import 'oil_coupon/vehicle_login_screen.dart';
 import '../widgets/commercial_ad_banner.dart';
 import '../widgets/commercial_ad_inline_card.dart';
@@ -1017,39 +1016,6 @@ class _CitizenScreenState
     );
   }
 
-  Widget _oilCouponPrivateCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.green.shade50,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Icon(Icons.confirmation_number_rounded, color: Color(0xFF087F3D), size: 28),
-        ),
-        title: const Text(
-          'الكوبون النفطي - السيارات الخصوصية',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        subtitle: const Text(
-          'تسجيل دخول وتسجيل مركبة خصوصية جديدة للحصول على حصة البنزين',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const VehicleLoginScreen(isGovernment: false)),
-          );
-        },
-      ),
-    );
-  }
-
   // مستطيل واحد يحتوي الموقع يساراً، المنتج في الوسط، و911 يميناً.
   Widget _mainInfoCard() {
     return Container(
@@ -1703,7 +1669,6 @@ class _CitizenScreenState
   }
 
   Widget _stationCard(Station station) {
-    final quantity = productQuantity(station);
     final distance = distanceFromUser(station);
     final available = checkProduct(station);
     final status = station.workingStatus.trim().toLowerCase();

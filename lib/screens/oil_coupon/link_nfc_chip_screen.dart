@@ -68,7 +68,8 @@ class _LinkNfcChipScreenState extends State<LinkNfcChipScreen> {
     if (_foundVehicle == null) return;
 
     try {
-      bool isAvailable = await NfcManager.instance.isAvailable();
+      final availability = await NfcManager.instance.checkAvailability();
+      bool isAvailable = availability == NfcAvailability.enabled;
       if (!isAvailable) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -107,7 +108,7 @@ class _LinkNfcChipScreenState extends State<LinkNfcChipScreen> {
         pollingOptions: {NfcPollingOption.iso14443, NfcPollingOption.iso15693},
         onDiscovered: (NfcTag tag) async {
           try {
-            final dynamic rawData = tag.data;
+            final dynamic rawData = (tag as dynamic).data;
             String nfcUid = '';
 
             if (rawData is Map) {

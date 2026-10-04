@@ -26,7 +26,8 @@ class _NfcScannerScreenState extends State<NfcScannerScreen> {
 
   Future<void> _startNfcSession() async {
     try {
-      bool isAvailable = await NfcManager.instance.isAvailable();
+      final availability = await NfcManager.instance.checkAvailability();
+      bool isAvailable = availability == NfcAvailability.enabled;
       if (!isAvailable) {
         if (!mounted) return;
         setState(() {
@@ -40,7 +41,7 @@ class _NfcScannerScreenState extends State<NfcScannerScreen> {
         pollingOptions: {NfcPollingOption.iso14443, NfcPollingOption.iso15693},
         onDiscovered: (NfcTag tag) async {
           try {
-            final dynamic rawData = tag.data;
+            final dynamic rawData = (tag as dynamic).data;
             String vehicleId = '';
 
             if (rawData is Map) {

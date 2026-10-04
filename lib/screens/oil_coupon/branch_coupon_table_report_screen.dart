@@ -76,7 +76,7 @@ class _BranchCouponTableReportScreenState extends State<BranchCouponTableReportS
                 ),
               ),
               pw.SizedBox(height: 12),
-              pw.Table.fromTextArray(
+              pw.TableHelper.fromTextArray(
                 context: context,
                 data: <List<String>>[
                   <String>['ت', 'رقم السيارة', 'نوع السيارة', 'اسم صاحب السيارة / الجهة', 'الحصة المقررة', 'المصروف', 'الباقي', 'الملاحظات'],

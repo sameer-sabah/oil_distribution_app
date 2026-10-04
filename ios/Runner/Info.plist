@@ -37,9 +37,9 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>يسمح تطبيق نافذة المنتوج النفطي بحفظ الصور والملفات التي ينشئها المستخدم عند الحاجة.</string>
 
-	<!-- ضع مفتاح Google Maps الخاص بـ iOS هنا قبل البناء -->
-<key>GOOGLE_MAPS_API_KEY</key>
-<string>AIzaSyCvpNZsWR_K46OSS_CfwG7dM7befq38UAY</string>
+	<!-- مفتاح Google Maps الخاص بـ iOS -->
+	<key>GOOGLE_MAPS_API_KEY</key>
+	<string>AIzaSyCvpNZsWR_K46OSS_CfwG7dM7befq38UAY</string>
 
 	<!-- ضروري لإشعارات FCM بالخلفية -->
 	<key>UIBackgroundModes</key>
@@ -48,27 +48,6 @@
 		<string>remote-notification</string>
 	</array>
 
-	<key>UIApplicationSceneManifest</key>
-	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
-		<key>UISceneConfigurations</key>
-		<dict>
-			<key>UIWindowSceneSessionRoleApplication</key>
-			<array>
-				<dict>
-					<key>UISceneClassName</key>
-					<string>UIWindowScene</string>
-					<key>UISceneConfigurationName</key>
-					<string>flutter</string>
-					<key>UISceneDelegateClassName</key>
-					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-					<key>UISceneStoryboardFile</key>
-					<string>Main</string>
-				</dict>
-			</array>
-		</dict>
-	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
