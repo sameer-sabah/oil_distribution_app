@@ -2,7 +2,7 @@ name: oil_distribution_app
 description: "نافذة المنتوج النفطي"
 publish_to: "none"
 
-version: 2.0.3+11
+version: 2.0.4+13
 
 environment:
   sdk: ">=3.12.0 <4.0.0"
@@ -19,12 +19,17 @@ dependencies:
   # ===========================
   # Firebase
   # ===========================
-  firebase_core: ^4.0.0
-  firebase_auth: ^6.0.0
-  firebase_database: ^12.0.0
-  cloud_firestore: ^6.0.0
-  firebase_messaging: ^16.0.0
-  firebase_storage: ^13.0.0
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  firebase_database: ^12.6.0
+  cloud_firestore: ^6.10.0
+  firebase_messaging: ^16.7.0
+  firebase_storage: ^13.6.0
+
+  # ===========================
+  # Ads
+  # ===========================
+  google_mobile_ads: ^5.2.0
 
   # ===========================
   # State Management
