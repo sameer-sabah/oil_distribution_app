@@ -10,13 +10,12 @@ workflows:
     scripts:
       - name: Get Flutter packages
         script: |
-          flutter pub upgrade --major-versions firebase_core firebase_auth firebase_storage cloud_firestore firebase_messaging firebase_database
           flutter pub get
           flutter gen-l10n || true
           flutter build ios --config-only --no-codesign
       - name: Install CocoaPods
         script: |
-          cd ios && pod install --repo-update
+          cd ios && pod install
       - name: Build iOS IPA
         script: |
           flutter build ipa --release --no-codesign
