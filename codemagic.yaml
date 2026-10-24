@@ -11,7 +11,8 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter pub get
-          flutter build ios --config-only
+          flutter gen-l10n || true
+          flutter build ios --config-only --no-codesign
       - name: Install CocoaPods
         script: |
           cd ios && pod install
