@@ -8,8 +8,9 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Get Flutter packages
+      - name: Disable SPM and Get Flutter packages
         script: |
+          flutter config --no-enable-swift-package-manager
           flutter pub get
           flutter gen-l10n || true
           flutter build ios --config-only --no-codesign
